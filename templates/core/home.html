@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}EcoShop Ghana — Shop local, delivered nationwide{% endblock %}
+
+{% block content %}
+<section class="bg-forest text-sand rounded-3xl px-8 py-16 mb-12 relative overflow-hidden">
+    <div class="relative z-10 max-w-xl">
+        <p class="uppercase tracking-widest text-gold text-xs font-semibold mb-3">Shop Ghana &middot; Delivered to your door</p>
+        <h1 class="font-display text-4xl md:text-5xl font-bold leading-tight mb-4">Everything you need,<br>from vendors you trust.</h1>
+        <p class="text-sand/80 mb-6">Browse thousands of products across every region of Ghana. Pay with Mobile Money or card, and track your order every step of the way.</p>
+        <a href="{% url 'catalog:product_list' %}" class="inline-block bg-gold hover:bg-gold-light text-forest-dark font-semibold px-6 py-3 rounded-full transition">Start shopping</a>
+    </div>
+</section>
+
+<section class="mb-12">
+    <h2 class="font-display text-2xl font-bold mb-4">Shop by category</h2>
+    <div class="flex gap-3 overflow-x-auto pb-2">
+        {% for category in categories %}
+        <a href="{% url 'catalog:product_list' %}?category={{ category.slug }}"
+           class="shrink-0 bg-white border border-forest/10 rounded-xl px-5 py-3 text-sm font-medium hover:border-gold hover:text-gold transition">
+            {{ category.name }}
+        </a>
+        {% empty %}
+        <p class="text-forest-dark/60 text-sm">No categories yet — add some in the admin.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h2 class="font-display text-2xl font-bold mb-4">Featured products</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+        {% for product in featured %}
+            {% include "catalog/_product_card.html" %}
+        {% empty %}
+        <p class="text-forest-dark/60 text-sm col-span-4">No products yet — add some in the admin or vendor dashboard.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

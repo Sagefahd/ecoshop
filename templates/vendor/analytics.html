@@ -1,0 +1,39 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Analytics — {{ request.user.vendor_profile.store_name }}{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="font-display text-2xl font-bold mb-6">Analytics</h1>
+
+<div class="bg-white rounded-2xl border border-forest/10 mb-8">
+    <div class="p-5 border-b border-forest/10">
+        <h2 class="font-semibold">Top-selling products</h2>
+    </div>
+    <div class="divide-y divide-forest/10">
+        {% for row in top_products %}
+        <div class="flex items-center justify-between p-4 text-sm">
+            <span>{{ row.product__name }}</span>
+            <span class="text-forest/50">{{ row.units_sold }} sold</span>
+            <span class="font-semibold">GHS {{ row.revenue }}</span>
+        </div>
+        {% empty %}
+        <p class="p-5 text-sm text-forest/50">No sales data yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-forest/10">
+    <div class="p-5 border-b border-forest/10">
+        <h2 class="font-semibold">Low stock alerts <span class="text-clayred text-xs font-normal">(5 or fewer left)</span></h2>
+    </div>
+    <div class="divide-y divide-forest/10">
+        {% for product in low_stock %}
+        <a href="{% url 'vendor:product_edit' product.id %}" class="flex items-center justify-between p-4 text-sm hover:bg-forest/5 transition">
+            <span>{{ product.name }}</span>
+            <span class="font-semibold text-clayred">{{ product.stock_quantity }} left</span>
+        </a>
+        {% empty %}
+        <p class="p-5 text-sm text-forest/50">All products are well stocked.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

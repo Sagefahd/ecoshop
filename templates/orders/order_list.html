@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}My orders — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<h1 class="font-display text-2xl font-bold mb-6">My orders</h1>
+
+{% if orders %}
+<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+    {% for order in orders %}
+    <a href="{% url 'orders:order_status' order.order_id %}" class="flex items-center justify-between p-4 hover:bg-forest/5 transition">
+        <div>
+            <p class="font-medium text-sm">{{ order.order_id }}</p>
+            <p class="text-xs text-forest/50">{{ order.created_at|date:"M d, Y" }} &middot; {{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</p>
+        </div>
+        <div class="text-right">
+            <p class="font-semibold">GHS {{ order.total }}</p>
+            <span class="text-xs font-medium px-2 py-1 rounded-full
+                {% if order.status == 'delivered' %} bg-forest-light/10 text-forest-light
+                {% elif order.status == 'cancelled' %} bg-clayred/10 text-clayred
+                {% else %} bg-gold/10 text-gold {% endif %}">
+                {{ order.get_status_display }}
+            </span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-forest/60">You haven't placed any orders yet.</p>
+{% endif %}
+{% endblock %}

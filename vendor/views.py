@@ -1,0 +1,196 @@
+from decimal import Decimal
+
+from django.contrib import messages
+from django.db.models import Sum, Count, Q, F
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from datetime import timedelta
+
+from catalog.models import Product, Category, Promo
+from orders.models import Order, OrderItem
+from payments.models import Payment
+from .decorators import vendor_required
+from .forms import ProductForm
+
+
+@vendor_required
+def dashboard_home(request):
+    vendor = request.user.vendor_profile
+    products = Product.objects.filter(vendor=vendor)
+    orders = Order.objects.filter(items__product__vendor=vendor).distinct()
+
+    today = timezone.now()
+    last_30_days = today - timedelta(days=30)
+
+    stats = {
+        "total_products": products.count(),
+        "active_products": products.filter(is_active=True).count(),
+        "out_of_stock": products.filter(stock_quantity=0).count(),
+        "pending_orders": orders.filter(status__in=["pending", "preparing"]).count(),
+        "completed_orders": orders.filter(status="delivered").count(),
+        "orders_last_30_days": orders.filter(created_at__gte=last_30_days).count(),
+        "revenue_last_30_days": Payment.objects.filter(
+            order__items__product__vendor=vendor, status="successful", created_at__gte=last_30_days
+        ).distinct().aggregate(total=Sum("amount"))["total"] or Decimal("0.00"),
+    }
+
+    recent_orders = orders.order_by("-created_at")[:8]
+
+    return render(request, "vendor/dashboard_home.html", {
+        "vendor": vendor, "stats": stats, "recent_orders": recent_orders,
+    })
+
+
+# ---------- Orders (checklist: pending / completed) ----------
+
+@vendor_required
+def order_checklist(request):
+    vendor = request.user.vendor_profile
+    status_filter = request.GET.get("status", "pending")
+
+    orders = Order.objects.filter(items__product__vendor=vendor).distinct()
+
+    if status_filter == "pending":
+        orders = orders.filter(status__in=["pending", "preparing", "shipped"])
+    elif status_filter == "completed":
+        orders = orders.filter(status="delivered")
+    elif status_filter == "cancelled":
+        orders = orders.filter(status="cancelled")
+
+    orders = orders.order_by("-created_at")
+
+    return render(request, "vendor/order_checklist.html", {
+        "orders": orders, "status_filter": status_filter,
+    })
+
+
+@vendor_required
+def order_detail(request, order_id):
+    vendor = request.user.vendor_profile
+    order = get_object_or_404(Order.objects.distinct(), order_id=order_id, items__product__vendor=vendor)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        if new_status in dict(Order.STATUS_CHOICES):
+            order.status = new_status
+            order.save(update_fields=["status"])
+            messages.success(request, f"Order {order.order_id} marked as {order.get_status_display()}.")
+            return redirect("vendor:order_detail", order_id=order.order_id)
+
+    return render(request, "vendor/order_detail.html", {"order": order})
+
+
+# ---------- Payments tab ----------
+
+@vendor_required
+def payments_tab(request):
+    vendor = request.user.vendor_profile
+    payments = Payment.objects.filter(order__items__product__vendor=vendor).distinct().select_related("order")
+
+    status_filter = request.GET.get("status")
+    if status_filter in ("pending", "successful", "failed"):
+        payments = payments.filter(status=status_filter)
+
+    summary = payments.aggregate(
+        successful=Count("id", filter=Q(status="successful")),
+        pending=Count("id", filter=Q(status="pending")),
+        failed=Count("id", filter=Q(status="failed")),
+        total_received=Sum("amount", filter=Q(status="successful")),
+    )
+
+    return render(request, "vendor/payments_tab.html", {
+        "payments": payments.order_by("-created_at"),
+        "summary": summary,
+        "status_filter": status_filter,
+    })
+
+
+# ---------- Analytics ----------
+
+@vendor_required
+def analytics(request):
+    vendor = request.user.vendor_profile
+
+    top_products = (
+        OrderItem.objects.filter(product__vendor=vendor)
+        .values("product__name")
+        .annotate(units_sold=Sum("quantity"), revenue=Sum(F("unit_price") * F("quantity")))
+        .order_by("-units_sold")[:10]
+    )
+
+    low_stock = Product.objects.filter(vendor=vendor, stock_quantity__lte=5, is_active=True)
+
+    return render(request, "vendor/analytics.html", {
+        "top_products": top_products,
+        "low_stock": low_stock,
+    })
+
+
+# ---------- Product management ----------
+
+@vendor_required
+def product_list(request):
+    vendor = request.user.vendor_profile
+    products = Product.objects.filter(vendor=vendor).order_by("-created_at")
+    return render(request, "vendor/product_list.html", {"products": products})
+
+
+@vendor_required
+def product_create(request):
+    vendor = request.user.vendor_profile
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.vendor = vendor
+            product.save()
+            messages.success(request, f"{product.name} added to your store.")
+            return redirect("vendor:product_list")
+    else:
+        form = ProductForm()
+    return render(request, "vendor/product_form.html", {"form": form, "mode": "create"})
+
+
+@vendor_required
+def product_edit(request, pk):
+    vendor = request.user.vendor_profile
+    product = get_object_or_404(Product, pk=pk, vendor=vendor)
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"{product.name} updated.")
+            return redirect("vendor:product_list")
+    else:
+        form = ProductForm(instance=product)
+    return render(request, "vendor/product_form.html", {"form": form, "mode": "edit", "product": product})
+
+
+@vendor_required
+def product_delete(request, pk):
+    vendor = request.user.vendor_profile
+    product = get_object_or_404(Product, pk=pk, vendor=vendor)
+    if request.method == "POST":
+        name = product.name
+        product.delete()
+        messages.success(request, f"{name} removed from your store.")
+        return redirect("vendor:product_list")
+    return render(request, "vendor/product_confirm_delete.html", {"product": product})
+
+
+@vendor_required
+def product_toggle_active(request, pk):
+    vendor = request.user.vendor_profile
+    product = get_object_or_404(Product, pk=pk, vendor=vendor)
+    product.is_active = not product.is_active
+    product.save(update_fields=["is_active"])
+    return redirect("vendor:product_list")
+
+
+# ---------- Promo management ----------
+
+@vendor_required
+def promo_list(request):
+    vendor = request.user.vendor_profile
+    promos = Promo.objects.filter(products__vendor=vendor).distinct()
+    return render(request, "vendor/promo_list.html", {"promos": promos})

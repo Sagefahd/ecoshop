@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_id }} — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="font-display text-2xl font-bold">Order {{ order.order_id }}</h1>
+        <span class="text-sm font-medium px-3 py-1 rounded-full
+            {% if order.status == 'delivered' %} bg-forest-light/10 text-forest-light
+            {% elif order.status == 'cancelled' %} bg-clayred/10 text-clayred
+            {% else %} bg-gold/10 text-gold {% endif %}">
+            {{ order.get_status_display }}
+        </span>
+    </div>
+
+    <!-- Status tracker -->
+    <div class="bg-white rounded-2xl border border-forest/10 p-6 mb-6">
+        <div class="flex justify-between">
+            {% for step, label in order.STATUS_CHOICES %}
+                {% if step != "cancelled" %}
+                <div class="flex-1 text-center">
+                    <div class="mx-auto mb-2 h-3 w-3 rounded-full
+                        {% if order.status == step %}bg-gold{% elif forloop.counter0 < order.STATUS_CHOICES|length %}bg-forest/20{% endif %}"></div>
+                    <p class="text-xs text-forest/60">{{ label }}</p>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+            <h2 class="font-semibold mb-3">Order details</h2>
+            <dl class="text-sm space-y-1">
+                <div class="flex justify-between"><dt class="text-forest/60">Order ID</dt><dd>{{ order.order_id }}</dd></div>
+                <div class="flex justify-between"><dt class="text-forest/60">Date placed</dt><dd>{{ order.created_at|date:"M d, Y H:i" }}</dd></div>
+                <div class="flex justify-between"><dt class="text-forest/60">Quantity</dt><dd>{{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</dd></div>
+                <div class="flex justify-between"><dt class="text-forest/60">Subtotal</dt><dd>GHS {{ order.subtotal }}</dd></div>
+                <div class="flex justify-between"><dt class="text-forest/60">Delivery fee</dt><dd>GHS {{ order.delivery_fee }}</dd></div>
+                <div class="flex justify-between font-semibold border-t border-forest/10 pt-1 mt-1"><dt>Total</dt><dd>GHS {{ order.total }}</dd></div>
+            </dl>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+            <h2 class="font-semibold mb-3">Delivery to</h2>
+            <p class="text-sm">{{ order.primary_address.full_name }} &middot; {{ order.primary_address.phone_number }}</p>
+            <p class="text-sm text-forest/60 mb-3">{{ order.primary_address.street_address }}, {{ order.primary_address.city_town }}, {{ order.primary_address.get_region_display }}</p>
+            <p class="text-xs text-forest/40">Backup contact: {{ order.secondary_address.full_name }} &middot; {{ order.secondary_address.phone_number }}</p>
+        </div>
+    </div>
+
+    {% if order.note_to_seller %}
+    <div class="bg-gold/10 border border-gold/30 rounded-xl p-4 mb-6 text-sm">
+        <span class="font-medium">Note to seller:</span> {{ order.note_to_seller }}
+    </div>
+    {% endif %}
+
+    <div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+        {% for item in order.items.all %}
+        <div class="flex justify-between p-4 text-sm">
+            <span>{{ item.quantity }} &times; {{ item.product_name }}</span>
+            <span class="font-medium">GHS {{ item.subtotal }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

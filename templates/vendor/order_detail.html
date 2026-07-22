@@ -1,0 +1,52 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Order {{ order.order_id }} — {{ request.user.vendor_profile.store_name }}{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="font-display text-2xl font-bold mb-6">Order {{ order.order_id }}</h1>
+
+<div class="grid md:grid-cols-3 gap-6">
+    <div class="md:col-span-2 space-y-6">
+        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+            <h2 class="font-semibold mb-3">Items</h2>
+            <div class="divide-y divide-forest/10">
+                {% for item in order.items.all %}
+                <div class="flex justify-between py-3 text-sm">
+                    <span>{{ item.quantity }} &times; {{ item.product_name }}</span>
+                    <span class="font-medium">GHS {{ item.subtotal }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if order.note_to_seller %}
+        <div class="bg-gold/10 border border-gold/30 rounded-xl p-4 text-sm">
+            <span class="font-medium">Buyer's note:</span> {{ order.note_to_seller }}
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+            <h2 class="font-semibold mb-3">Delivery address</h2>
+            <p class="text-sm">{{ order.primary_address.full_name }} &middot; {{ order.primary_address.phone_number }}</p>
+            <p class="text-sm text-forest/60">{{ order.primary_address.street_address }}, {{ order.primary_address.city_town }}, {{ order.primary_address.get_region_display }}</p>
+            <p class="text-xs text-forest/40 mt-2">Backup: {{ order.secondary_address.full_name }} &middot; {{ order.secondary_address.phone_number }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-forest/10 p-6 h-fit">
+        <h2 class="font-semibold mb-3">Update status</h2>
+        <form method="post" class="space-y-3">
+            {% csrf_token %}
+            <select name="status" class="w-full border border-forest/20 rounded-lg px-3 py-2 text-sm">
+                {% for value, label in order.STATUS_CHOICES %}
+                    <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-2 rounded-full transition">Update status</button>
+        </form>
+        <div class="mt-4 pt-4 border-t border-forest/10 text-sm space-y-1">
+            <p class="flex justify-between"><span class="text-forest/60">Date</span><span>{{ order.created_at|date:"M d, Y" }}</span></p>
+            <p class="flex justify-between font-semibold"><span>Total</span><span>GHS {{ order.total }}</span></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

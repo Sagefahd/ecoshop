@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Your cart — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<h1 class="font-display text-2xl font-bold mb-6">Your cart</h1>
+
+{% if not user.is_authenticated %}
+<div class="bg-gold/10 border border-gold/30 rounded-xl p-4 mb-6 text-sm">
+    Browsing without an account? Add items freely — you'll only need to
+    <a href="{% url 'accounts:request_otp' %}" class="text-gold font-semibold underline">log in</a> when you're ready to check out.
+</div>
+{% endif %}
+
+{% if cart and cart.items.exists %}
+<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+    {% for item in cart.items.all %}
+    <div class="flex items-center gap-4 p-4">
+        <div class="w-16 h-16 bg-forest/5 rounded-lg overflow-hidden shrink-0">
+            {% if item.product.thumbnail %}
+                <img src="{{ item.product.thumbnail.url }}" class="w-full h-full object-cover">
+            {% endif %}
+        </div>
+        <div class="flex-1">
+            <p class="font-medium text-sm">{{ item.product.name }}</p>
+            <p class="text-xs text-forest/50">GHS {{ item.product.display_price }} each</p>
+        </div>
+        <form action="{% url 'orders:cart_update' item.id %}" method="post" class="flex items-center gap-2">
+            {% csrf_token %}
+            <input type="number" name="quantity" value="{{ item.quantity }}" min="0"
+                   class="w-16 border border-forest/20 rounded-lg px-2 py-1 text-sm">
+            <button class="text-xs text-gold font-medium hover:underline">Update</button>
+        </form>
+        <p class="font-semibold w-24 text-right">GHS {{ item.subtotal }}</p>
+        <a href="{% url 'orders:cart_remove' item.id %}" class="text-clayred text-xs hover:underline">Remove</a>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="flex justify-end mt-6">
+    <div class="w-full md:w-80 bg-white rounded-2xl border border-forest/10 p-6">
+        <div class="flex justify-between mb-4">
+            <span class="text-forest/60">Total</span>
+            <span class="font-display font-bold text-xl">GHS {{ cart.total }}</span>
+        </div>
+        <a href="{% url 'orders:checkout' %}" class="block text-center bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition">
+            Proceed to checkout
+        </a>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-16">
+    <p class="text-forest/60 mb-4">Your cart is empty.</p>
+    <a href="{% url 'catalog:product_list' %}" class="text-gold font-semibold hover:underline">Start shopping &rarr;</a>
+</div>
+{% endif %}
+{% endblock %}

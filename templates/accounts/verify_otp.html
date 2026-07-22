@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Verify code — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-2xl border border-forest/10 p-8 mt-8">
+    <h1 class="font-display text-2xl font-bold mb-2">Enter the code</h1>
+    <p class="text-sm text-forest/60 mb-6">We sent a 6-digit code to <span class="font-medium text-forest">{{ phone_number }}</span></p>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.code }}
+        {% if form.code.errors %}
+            <p class="text-clayred text-xs">{{ form.code.errors.0 }}</p>
+        {% endif %}
+        <button class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition">Verify &amp; continue</button>
+    </form>
+
+    <form method="post" action="{% url 'accounts:resend_otp' %}" class="mt-4 text-center">
+        {% csrf_token %}
+        <button class="text-sm text-forest/60 hover:text-gold underline">Didn't get a code? Resend</button>
+    </form>
+</div>
+{% endblock %}

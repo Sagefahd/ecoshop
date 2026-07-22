@@ -1,0 +1,44 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Dashboard — {{ vendor.store_name }}{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="font-display text-2xl font-bold mb-6">Overview</h1>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Active products</p>
+        <p class="font-display text-2xl font-bold">{{ stats.active_products }}</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Out of stock</p>
+        <p class="font-display text-2xl font-bold {% if stats.out_of_stock > 0 %}text-clayred{% endif %}">{{ stats.out_of_stock }}</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Pending orders</p>
+        <p class="font-display text-2xl font-bold text-gold">{{ stats.pending_orders }}</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Revenue (30 days)</p>
+        <p class="font-display text-2xl font-bold">GHS {{ stats.revenue_last_30_days }}</p>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-forest/10">
+    <div class="flex items-center justify-between p-5 border-b border-forest/10">
+        <h2 class="font-semibold">Recent orders</h2>
+        <a href="{% url 'vendor:order_checklist' %}" class="text-xs text-gold hover:underline">View all &rarr;</a>
+    </div>
+    <div class="divide-y divide-forest/10">
+        {% for order in recent_orders %}
+        <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex items-center justify-between p-4 hover:bg-forest/5 transition text-sm">
+            <span class="font-medium">{{ order.order_id }}</span>
+            <span class="text-forest/50">{{ order.created_at|date:"M d" }}</span>
+            <span class="font-semibold">GHS {{ order.total }}</span>
+            <span class="text-xs font-medium px-2 py-1 rounded-full bg-gold/10 text-gold">{{ order.get_status_display }}</span>
+        </a>
+        {% empty %}
+        <p class="p-5 text-sm text-forest/50">No orders yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Log in — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-2xl border border-forest/10 p-8 mt-8">
+    <h1 class="font-display text-2xl font-bold mb-2">Log in or sign up</h1>
+    <p class="text-sm text-forest/60 mb-6">We'll text you a one-time code to confirm it's you.</p>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
+        <div>
+            <label class="block text-sm font-medium mb-1">{{ form.phone_number.label }}</label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}
+                <p class="text-clayred text-xs mt-1">{{ form.phone_number.errors.0 }}</p>
+            {% endif %}
+        </div>
+        <button class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition">Send code</button>
+    </form>
+
+    <div class="flex items-center gap-3 my-6">
+        <div class="flex-1 h-px bg-forest/10"></div>
+        <span class="text-xs text-forest/40">OR</span>
+        <div class="flex-1 h-px bg-forest/10"></div>
+    </div>
+
+    <div class="space-y-3">
+        <a href="/accounts/social/google/login/{% if next_url %}?next={{ next_url }}{% endif %}"
+           class="flex items-center justify-center gap-2 border border-forest/20 rounded-full py-3 text-sm font-medium hover:border-gold transition">
+            Continue with Google
+        </a>
+        <a href="/accounts/social/apple/login/{% if next_url %}?next={{ next_url }}{% endif %}"
+           class="flex items-center justify-center gap-2 border border-forest/20 rounded-full py-3 text-sm font-medium hover:border-gold transition">
+            Continue with Apple
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid md:grid-cols-[220px_1fr] gap-8">
+    <aside class="space-y-1">
+        <p class="text-xs uppercase tracking-widest text-forest/40 font-semibold mb-3 px-3">{{ request.user.vendor_profile.store_name }}</p>
+        {% url 'vendor:dashboard_home' as u_home %}
+        {% url 'vendor:order_checklist' as u_orders %}
+        {% url 'vendor:payments_tab' as u_payments %}
+        {% url 'vendor:analytics' as u_analytics %}
+        {% url 'vendor:product_list' as u_products %}
+        {% url 'vendor:promo_list' as u_promos %}
+
+        <a href="{{ u_home }}" class="block px-3 py-2 rounded-lg text-sm font-medium {% if request.path == u_home %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">Overview</a>
+        <a href="{{ u_orders }}" class="block px-3 py-2 rounded-lg text-sm font-medium {% if u_orders in request.path %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">Orders</a>
+        <a href="{{ u_payments }}" class="block px-3 py-2 rounded-lg text-sm font-medium {% if request.path == u_payments %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">Payments</a>
+        <a href="{{ u_analytics }}" class="block px-3 py-2 rounded-lg text-sm font-medium {% if request.path == u_analytics %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">Analytics</a>
+        <a href="{{ u_products }}" class="block px-3 py-2 rounded-lg text-sm font-medium {% if u_products in request.path %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">Products</a>
+        <a href="{{ u_promos }}" class="block px-3 py-2 rounded-lg text-sm font-medium {% if request.path == u_promos %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">Promos</a>
+    </aside>
+
+    <div>
+        {% block dashboard_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

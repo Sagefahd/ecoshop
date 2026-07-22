@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Shop — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row gap-8">
+    <aside class="md:w-56 shrink-0">
+        <h2 class="font-display font-bold text-lg mb-3">Categories</h2>
+        <ul class="space-y-1 text-sm">
+            <li>
+                <a href="{% url 'catalog:product_list' %}?q={{ query }}"
+                   class="block px-3 py-2 rounded-lg {% if not active_category %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">
+                    All products
+                </a>
+            </li>
+            {% for category in categories %}
+            <li>
+                <a href="{% url 'catalog:product_list' %}?q={{ query }}&category={{ category.slug }}"
+                   class="block px-3 py-2 rounded-lg {% if active_category == category.slug %}bg-forest text-sand{% else %}hover:bg-forest/5{% endif %}">
+                    {{ category.name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <div class="flex-1">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="font-display text-2xl font-bold">
+                {% if query %}Results for "{{ query }}"{% else %}All products{% endif %}
+            </h1>
+            <span class="text-sm text-forest/50">{{ page_obj.paginator.count }} item{{ page_obj.paginator.count|pluralize }}</span>
+        </div>
+        {% include "catalog/_product_grid.html" %}
+    </div>
+</div>
+{% endblock %}

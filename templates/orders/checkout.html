@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Checkout — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<h1 class="font-display text-2xl font-bold mb-6">Checkout</h1>
+
+<div class="grid md:grid-cols-3 gap-8">
+    <div class="md:col-span-2 space-y-6">
+        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="font-semibold">Primary address</h2>
+                <a href="{% url 'accounts:address_edit' 'primary' %}?next={% url 'orders:checkout' %}" class="text-xs text-gold hover:underline">Change</a>
+            </div>
+            <p class="text-sm">{{ primary.full_name }} &middot; {{ primary.phone_number }}</p>
+            <p class="text-sm text-forest/60">{{ primary.street_address }}, {{ primary.city_town }}, {{ primary.get_region_display }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="font-semibold">Secondary address</h2>
+                <a href="{% url 'accounts:address_edit' 'secondary' %}?next={% url 'orders:checkout' %}" class="text-xs text-gold hover:underline">Change</a>
+            </div>
+            <p class="text-sm">{{ secondary.full_name }} &middot; {{ secondary.phone_number }}</p>
+            <p class="text-sm text-forest/60">{{ secondary.street_address }}, {{ secondary.city_town }}, {{ secondary.get_region_display }}</p>
+        </div>
+
+        <form method="post" id="checkout-form">
+            {% csrf_token %}
+            <div class="bg-white rounded-2xl border border-forest/10 p-6">
+                <h2 class="font-semibold mb-3">Note to seller <span class="text-forest/40 font-normal">(optional)</span></h2>
+                <textarea name="note_to_seller" rows="3" placeholder="e.g. specific size, color, or delivery instructions"
+                          class="w-full border border-forest/20 rounded-lg px-3 py-2 text-sm"></textarea>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-forest/10 p-6 h-fit">
+        <h2 class="font-semibold mb-4">Order summary</h2>
+        <div class="space-y-2 mb-4">
+            {% for item in cart.items.all %}
+            <div class="flex justify-between text-sm">
+                <span class="text-forest/70">{{ item.quantity }} &times; {{ item.product.name }}</span>
+                <span>GHS {{ item.subtotal }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="flex justify-between font-bold border-t border-forest/10 pt-3 mb-6">
+            <span>Total</span>
+            <span>GHS {{ cart.total }}</span>
+        </div>
+        <button type="submit" form="checkout-form" class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition">
+            Continue to payment
+        </button>
+    </div>
+</div>
+{% endblock %}

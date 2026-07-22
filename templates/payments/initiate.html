@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Payment — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-2xl border border-forest/10 p-8">
+    <h1 class="font-display text-2xl font-bold mb-2">Pay for order {{ order.order_id }}</h1>
+    <p class="text-sm text-forest/60 mb-6">Total: <span class="font-semibold text-forest">GHS {{ order.total }}</span></p>
+
+    <form method="post" class="space-y-3">
+        {% csrf_token %}
+        <label class="flex items-center gap-3 border border-forest/20 rounded-xl p-4 cursor-pointer hover:border-gold transition">
+            <input type="radio" name="method" value="paystack_card" checked class="accent-gold">
+            <span>Pay with Card (Paystack)</span>
+        </label>
+        <label class="flex items-center gap-3 border border-forest/20 rounded-xl p-4 cursor-pointer hover:border-gold transition">
+            <input type="radio" name="method" value="paystack_momo" class="accent-gold">
+            <span>Pay with Mobile Money (Paystack)</span>
+        </label>
+        <label class="flex items-center gap-3 border border-forest/20 rounded-xl p-4 cursor-pointer hover:border-gold transition">
+            <input type="radio" name="method" value="cash_on_delivery" class="accent-gold">
+            <span>Cash on delivery</span>
+        </label>
+        <button class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition mt-4">
+            Confirm payment method
+        </button>
+    </form>
+</div>
+{% endblock %}

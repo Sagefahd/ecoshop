@@ -1,0 +1,52 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Payments — {{ request.user.vendor_profile.store_name }}{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="font-display text-2xl font-bold mb-6">Payments</h1>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Successful</p>
+        <p class="font-display text-2xl font-bold text-forest-light">{{ summary.successful|default:0 }}</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Pending</p>
+        <p class="font-display text-2xl font-bold text-gold">{{ summary.pending|default:0 }}</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Failed</p>
+        <p class="font-display text-2xl font-bold text-clayred">{{ summary.failed|default:0 }}</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-forest/10 p-5">
+        <p class="text-xs text-forest/50 mb-1">Total received</p>
+        <p class="font-display text-2xl font-bold">GHS {{ summary.total_received|default:"0.00" }}</p>
+    </div>
+</div>
+
+<div class="flex gap-2 mb-6">
+    <a href="?" class="px-4 py-2 rounded-full text-sm font-medium {% if not status_filter %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">All</a>
+    <a href="?status=successful" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'successful' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Successful</a>
+    <a href="?status=pending" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'pending' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Pending</a>
+    <a href="?status=failed" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'failed' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Failed</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+    {% for payment in payments %}
+    <div class="flex items-center justify-between p-4 text-sm">
+        <div>
+            <p class="font-medium">{{ payment.order.order_id }}</p>
+            <p class="text-xs text-forest/50">{{ payment.get_method_display }} &middot; {{ payment.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        <span class="font-semibold">GHS {{ payment.amount }}</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full
+            {% if payment.status == 'successful' %} bg-forest-light/10 text-forest-light
+            {% elif payment.status == 'failed' %} bg-clayred/10 text-clayred
+            {% else %} bg-gold/10 text-gold {% endif %}">
+            {{ payment.get_status_display }}
+        </span>
+    </div>
+    {% empty %}
+    <p class="p-5 text-sm text-forest/50">No payments found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Orders — {{ request.user.vendor_profile.store_name }}{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="font-display text-2xl font-bold mb-6">Orders</h1>
+
+<div class="flex gap-2 mb-6">
+    <a href="?status=pending" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'pending' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Pending</a>
+    <a href="?status=completed" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'completed' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Completed</a>
+    <a href="?status=cancelled" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'cancelled' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Cancelled</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+    {% for order in orders %}
+    <div class="flex items-center gap-4 p-4">
+        <input type="checkbox" {% if order.status == 'delivered' %}checked{% endif %} disabled class="accent-gold h-4 w-4">
+        <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex-1 hover:text-gold transition">
+            <p class="text-sm font-medium">{{ order.order_id }} &middot; {{ order.user.phone_number }}</p>
+            <p class="text-xs text-forest/50">{{ order.created_at|date:"M d, Y" }} &middot; {{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</p>
+        </a>
+        <span class="font-semibold text-sm">GHS {{ order.total }}</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full
+            {% if order.status == 'delivered' %} bg-forest-light/10 text-forest-light
+            {% elif order.status == 'cancelled' %} bg-clayred/10 text-clayred
+            {% else %} bg-gold/10 text-gold {% endif %}">
+            {{ order.get_status_display }}
+        </span>
+    </div>
+    {% empty %}
+    <p class="p-5 text-sm text-forest/50">No orders in this view.</p>
+    {% endfor %}
+</div>
+{% endblock %}

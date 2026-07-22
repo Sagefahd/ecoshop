@@ -1,0 +1,35 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Products — {{ request.user.vendor_profile.store_name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="font-display text-2xl font-bold">Products</h1>
+    <a href="{% url 'vendor:product_create' %}" class="bg-forest hover:bg-forest-light text-sand font-semibold px-5 py-2 rounded-full transition text-sm">+ Add product</a>
+</div>
+
+<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+    {% for product in products %}
+    <div class="flex items-center gap-4 p-4">
+        <div class="w-12 h-12 bg-forest/5 rounded-lg overflow-hidden shrink-0">
+            {% if product.thumbnail %}<img src="{{ product.thumbnail.url }}" class="w-full h-full object-cover">{% endif %}
+        </div>
+        <div class="flex-1">
+            <p class="text-sm font-medium">{{ product.name }}</p>
+            <p class="text-xs text-forest/50">{{ product.category.name|default:"Uncategorized" }} &middot; SKU {{ product.sku }}</p>
+        </div>
+        <span class="text-sm">GHS {{ product.price }}</span>
+        <span class="text-sm {% if product.stock_quantity <= 5 %}text-clayred font-semibold{% endif %}">{{ product.stock_quantity }} in stock</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full {% if product.is_active %}bg-forest-light/10 text-forest-light{% else %}bg-forest/10 text-forest/50{% endif %}">
+            {% if product.is_active %}Active{% else %}Hidden{% endif %}
+        </span>
+        <a href="{% url 'vendor:product_toggle_active' product.id %}" class="text-xs text-forest/60 hover:underline">
+            {% if product.is_active %}Hide{% else %}Show{% endif %}
+        </a>
+        <a href="{% url 'vendor:product_edit' product.id %}" class="text-xs text-gold hover:underline">Edit</a>
+        <a href="{% url 'vendor:product_delete' product.id %}" class="text-xs text-clayred hover:underline">Delete</a>
+    </div>
+    {% empty %}
+    <p class="p-5 text-sm text-forest/50">You haven't added any products yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

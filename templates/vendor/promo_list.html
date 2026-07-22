@@ -1,0 +1,27 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Promos — {{ request.user.vendor_profile.store_name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="font-display text-2xl font-bold">Promos</h1>
+    <a href="/admin/catalog/promo/add/" class="bg-forest hover:bg-forest-light text-sand font-semibold px-5 py-2 rounded-full transition text-sm">+ Create promo</a>
+</div>
+<p class="text-sm text-forest/60 mb-6">Promos reduce a product's displayed price for a set period. Create and assign them to products from the admin panel — they'll immediately reflect on your storefront listings.</p>
+
+<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+    {% for promo in promos %}
+    <div class="flex items-center justify-between p-4 text-sm">
+        <div>
+            <p class="font-medium">{{ promo.name }}</p>
+            <p class="text-xs text-forest/50">{{ promo.products.count }} product{{ promo.products.count|pluralize }} &middot; {{ promo.start_date|date:"M d" }} – {{ promo.end_date|date:"M d, Y" }}</p>
+        </div>
+        <span class="font-semibold">{{ promo.discount_value }}{% if promo.discount_type == 'percentage' %}%{% else %} GHS{% endif %} off</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full {% if promo.is_active %}bg-forest-light/10 text-forest-light{% else %}bg-forest/10 text-forest/50{% endif %}">
+            {% if promo.is_active %}Active{% else %}Inactive{% endif %}
+        </span>
+    </div>
+    {% empty %}
+    <p class="p-5 text-sm text-forest/50">No promos yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
