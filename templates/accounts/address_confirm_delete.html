@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Delete address — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white rounded-2xl border border-forest/10 p-8 text-center">
+    <h1 class="font-display text-xl font-bold mb-4">Remove this address?</h1>
+    <p class="text-sm text-forest/60 mb-6">
+        {{ address.full_name }} &middot; {{ address.street_address }}, {{ address.city_town }}
+    </p>
+    <form method="post" class="flex gap-3 justify-center">
+        {% csrf_token %}
+        <a href="{% url 'accounts:address_list' %}" class="px-5 py-2 rounded-full border border-forest/20 text-sm font-medium">Cancel</a>
+        <button class="px-5 py-2 rounded-full bg-clayred text-white text-sm font-semibold">Delete</button>
+    </form>
+</div>
+{% endblock %}

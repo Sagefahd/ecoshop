@@ -43,9 +43,8 @@
 
         <div class="bg-white rounded-2xl border border-forest/10 p-6">
             <h2 class="font-semibold mb-3">Delivery to</h2>
-            <p class="text-sm">{{ order.primary_address.full_name }} &middot; {{ order.primary_address.phone_number }}</p>
-            <p class="text-sm text-forest/60 mb-3">{{ order.primary_address.street_address }}, {{ order.primary_address.city_town }}, {{ order.primary_address.get_region_display }}</p>
-            <p class="text-xs text-forest/40">Backup contact: {{ order.secondary_address.full_name }} &middot; {{ order.secondary_address.phone_number }}</p>
+            <p class="text-sm">{{ order.delivery_address.full_name }} &middot; {{ order.delivery_address.phone_number }}</p>
+            <p class="text-sm text-forest/60 mb-3">{{ order.delivery_address.street_address }}, {{ order.delivery_address.city_town }}, {{ order.delivery_address.get_region_display }}</p>
         </div>
     </div>
 

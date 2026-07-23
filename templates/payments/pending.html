@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Approve payment — EcoShop Ghana{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-2xl border border-forest/10 p-8 text-center">
+    <h1 class="font-display text-xl font-bold mb-3">Check your phone</h1>
+    <p class="text-sm text-forest/60 mb-6">
+        We've sent a Mobile Money prompt for order {{ payment.order.order_id }}.
+        Enter your MoMo PIN on your phone to complete payment.
+    </p>
+    <div id="payment-status" class="text-sm font-medium text-gold">Waiting for approval…</div>
+</div>
+
+<script>
+const statusUrl = "{% url 'payments:status' payment.reference %}";
+const orderStatusUrl = "{% url 'orders:order_status' payment.order.order_id %}";
+const statusEl = document.getElementById("payment-status");
+
+async function poll() {
+    try {
+        const res = await fetch(statusUrl);
+        const data = await res.json();
+        if (data.status === "successful") {
+            statusEl.textContent = "Payment confirmed! Redirecting…";
+            window.location.href = orderStatusUrl;
+        } else if (data.status === "failed") {
+            statusEl.textContent = "Payment failed or was declined.";
+            statusEl.classList.add("text-clayred");
+        } else {
+            setTimeout(poll, 3000);
+        }
+    } catch (e) {
+        setTimeout(poll, 5000);
+    }
+}
+poll();
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@
 {% block content %}
 <div class="grid md:grid-cols-[220px_1fr] gap-8">
     <aside class="space-y-1">
-        <p class="text-xs uppercase tracking-widest text-forest/40 font-semibold mb-3 px-3">{{ request.user.vendor_profile.store_name }}</p>
+        <p class="text-xs uppercase tracking-widest text-forest/40 font-semibold mb-3 px-3">EcoShop Ghana</p>
         {% url 'vendor:dashboard_home' as u_home %}
         {% url 'vendor:order_checklist' as u_orders %}
         {% url 'vendor:payments_tab' as u_payments %}

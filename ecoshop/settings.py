@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -62,6 +63,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.site_settings",
+                "core.context_processors.cart_count",
             ],
         },
     },
@@ -91,6 +93,15 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise: serves static files with gzip/brotli compression and
+# far-future cache headers (hashed filenames bust the cache on redeploy),
+# so browsers don't re-download unchanged CSS/JS on every visit.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
+WHITENOISE_MAX_AGE = 31536000  # 1 year, safe because filenames are content-hashed
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -134,13 +145,14 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-# ---- Arkesel SMS OTP ----
-ARKESEL_API_KEY = config("ARKESEL_API_KEY", default="")
-ARKESEL_SENDER_ID = config("ARKESEL_SENDER_ID", default="EcoShop")
+# ---- Nalo Solutions: SMS OTP + Mobile Money payment ----
+NALO_SMS_USERNAME = config("NALO_SMS_USERNAME", default="")
+NALO_SMS_PASSWORD = config("NALO_SMS_PASSWORD", default="")
+NALO_SMS_SENDER_ID = config("NALO_SMS_SENDER_ID", default="EcoShop")
 
-# ---- Paystack ----
-PAYSTACK_SECRET_KEY = config("PAYSTACK_SECRET_KEY", default="")
-PAYSTACK_PUBLIC_KEY = config("PAYSTACK_PUBLIC_KEY", default="")
+NALO_PAYMENT_USERNAME = config("NALO_PAYMENT_USERNAME", default="")
+NALO_PAYMENT_PASSWORD = config("NALO_PAYMENT_PASSWORD", default="")
+NALO_MERCHANT_ID = config("NALO_MERCHANT_ID", default="")
 
 # ---- Site-wide settings (WhatsApp support link etc.) ----
 WHATSAPP_SUPPORT_NUMBER = config("WHATSAPP_SUPPORT_NUMBER", default="233200000000")

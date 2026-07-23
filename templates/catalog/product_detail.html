@@ -14,7 +14,6 @@
     <div>
         <p class="text-xs uppercase tracking-widest text-gold font-semibold mb-2">{{ product.category.name|default:"Uncategorized" }}</p>
         <h1 class="font-display text-3xl font-bold mb-3">{{ product.name }}</h1>
-        <p class="text-sm text-forest/60 mb-4">Sold by <span class="font-medium text-forest">{{ product.vendor.store_name }}</span></p>
 
         <div class="flex items-baseline gap-3 mb-6">
             <span class="font-display text-3xl font-bold text-forest">GHS {{ product.display_price }}</span>
@@ -31,7 +30,7 @@
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.path }}">
             <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}"
-                   class="w-20 border border-forest/20 rounded-lg px-3 py-2">
+                   class="w-20 bg-white border border-forest/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition">
             <button class="bg-forest hover:bg-forest-light text-sand font-semibold px-6 py-3 rounded-full transition">Add to cart</button>
         </form>
         <p class="text-xs text-forest/50">{{ product.stock_quantity }} in stock</p>

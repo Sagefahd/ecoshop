@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
@@ -65,27 +66,58 @@ def cart_detail(request):
     return render(request, "orders/cart_detail.html", {"cart": cart})
 
 
+def _checkout_errors(request, cart, address):
+    """
+    Check-all validation: run every check before letting an order through,
+    rather than failing partway. Returns a list of human-readable problems —
+    empty list means everything is in order.
+    """
+    errors = []
+
+    if not cart or not cart.items.exists():
+        errors.append("Your cart is empty.")
+        return errors  # nothing else to check without a cart
+
+    if not address:
+        errors.append("Please add a delivery address before checking out.")
+
+    if not request.user.phone_number or not request.user.phone_verified:
+        errors.append("Please verify an active phone number on your account before checking out.")
+
+    for cart_item in cart.items.select_related("product"):
+        product = cart_item.product
+        if not product.is_active:
+            errors.append(f"\"{product.name}\" is no longer available and was removed from checkout.")
+        elif cart_item.quantity > product.stock_quantity:
+            errors.append(
+                f"Only {product.stock_quantity} of \"{product.name}\" left in stock "
+                f"(you have {cart_item.quantity} in your cart)."
+            )
+
+    return errors
+
+
 @login_required
 def checkout(request):
     cart = _get_or_create_cart(request)
-    if not cart or not cart.items.exists():
-        messages.warning(request, "Your cart is empty.")
-        return redirect("orders:cart_detail")
-
-    primary = Address.objects.filter(user=request.user, address_type="primary").first()
-    secondary = Address.objects.filter(user=request.user, address_type="secondary").first()
-
-    if not primary or not secondary:
-        messages.warning(request, "Please add both a primary and secondary address before checking out.")
-        return redirect("accounts:address_list")
+    address = (
+        Address.objects.filter(user=request.user, pk=request.POST.get("address_id")).first()
+        if request.method == "POST" else None
+    ) or request.user.addresses.filter(is_default=True).first()
+    addresses = request.user.addresses.all()
 
     if request.method == "POST":
+        errors = _checkout_errors(request, cart, address)
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect("orders:cart_detail" if not cart or not cart.items.exists() else "orders:checkout")
+
         note = request.POST.get("note_to_seller", "").strip()
 
         order = Order.objects.create(
             user=request.user,
-            primary_address=primary,
-            secondary_address=secondary,
+            delivery_address=address,
             note_to_seller=note,
             subtotal=cart.total,
             delivery_fee=Decimal("0.00"),
@@ -99,12 +131,18 @@ def checkout(request):
                 unit_price=cart_item.product.display_price,
                 quantity=cart_item.quantity,
             )
+            cart_item.product.stock_quantity = F("stock_quantity") - cart_item.quantity
+            cart_item.product.save(update_fields=["stock_quantity"])
         cart.items.all().delete()
 
         return redirect("payments:initiate", order_id=order.order_id)
 
+    if not cart or not cart.items.exists():
+        messages.warning(request, "Your cart is empty.")
+        return redirect("orders:cart_detail")
+
     return render(request, "orders/checkout.html", {
-        "cart": cart, "primary": primary, "secondary": secondary,
+        "cart": cart, "address": address, "addresses": addresses,
     })
 
 

@@ -6,7 +6,7 @@ from .models import Product, Category
 
 
 def product_list(request):
-    products = Product.objects.filter(is_active=True).select_related("category", "vendor")
+    products = Product.objects.filter(is_active=True).select_related("category")
 
     query = request.GET.get("q", "").strip()
     category_slug = request.GET.get("category", "").strip()
@@ -36,6 +36,6 @@ def product_list(request):
 
 
 def product_detail(request, slug):
-    product = get_object_or_404(Product.objects.select_related("category", "vendor"), slug=slug, is_active=True)
+    product = get_object_or_404(Product.objects.select_related("category"), slug=slug, is_active=True)
     related = Product.objects.filter(category=product.category, is_active=True).exclude(pk=product.pk)[:4]
     return render(request, "catalog/product_detail.html", {"product": product, "related": related})

@@ -27,7 +27,7 @@
         <form action="{% url 'orders:cart_update' item.id %}" method="post" class="flex items-center gap-2">
             {% csrf_token %}
             <input type="number" name="quantity" value="{{ item.quantity }}" min="0"
-                   class="w-16 border border-forest/20 rounded-lg px-2 py-1 text-sm">
+                   class="w-16 bg-white border border-forest/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition">
             <button class="text-xs text-gold font-medium hover:underline">Update</button>
         </form>
         <p class="font-semibold w-24 text-right">GHS {{ item.subtotal }}</p>

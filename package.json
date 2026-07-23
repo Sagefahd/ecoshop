@@ -1,0 +1,26 @@
+{
+  "name": "ecoshop",
+  "version": "1.0.0",
+  "description": "A Django e-commerce platform for a Ghanaian marketplace: phone (OTP) and\r Google/Apple sign-in, category + name search, promos, order tracking,\r Paystack checkout, and a full vendor dashboard.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sagefahd/ecoshop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sagefahd/ecoshop/issues"
+  },
+  "homepage": "https://github.com/Sagefahd/ecoshop#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  },
+  "dependencies": {
+    "htmx.org": "^1.9.10"
+  }
+}

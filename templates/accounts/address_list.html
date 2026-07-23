@@ -2,34 +2,41 @@
 {% block title %}Your addresses — EcoShop Ghana{% endblock %}
 
 {% block content %}
-<h1 class="font-display text-2xl font-bold mb-6">Your delivery addresses</h1>
-<p class="text-sm text-forest/60 mb-6">You need both a primary and a secondary address (with an active phone number) before you can check out.</p>
+<div class="flex items-center justify-between mb-6">
+    <h1 class="font-display text-2xl font-bold">Your delivery addresses</h1>
+    <a href="{% url 'accounts:address_create' %}" class="text-sm font-medium text-gold hover:underline">+ Add address</a>
+</div>
+
+{% if not addresses %}
+<div class="bg-white rounded-2xl border border-forest/10 p-6 text-sm text-forest/60">
+    You haven't saved an address yet. Add one before checking out.
+</div>
+{% endif %}
 
 <div class="grid md:grid-cols-2 gap-6">
+    {% for address in addresses %}
     <div class="bg-white rounded-2xl border border-forest/10 p-6">
-        <h2 class="font-semibold mb-3 text-forest">Primary address</h2>
-        {% for address in addresses %}
-            {% if address.address_type == "primary" %}
-                <p class="text-sm">{{ address.full_name }}</p>
-                <p class="text-sm text-forest/60">{{ address.street_address }}, {{ address.city_town }}</p>
-                <p class="text-sm text-forest/60">{{ address.get_region_display }}</p>
-                <p class="text-sm text-forest/60">{{ address.phone_number }}</p>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold text-forest">{{ address.label|default:"Address" }}</h2>
+            {% if address.is_default %}
+            <span class="text-xs font-medium px-2 py-1 rounded-full bg-gold/10 text-gold">Default</span>
             {% endif %}
-        {% endfor %}
-        <a href="{% url 'accounts:address_edit' 'primary' %}" class="inline-block mt-4 text-sm font-medium text-gold hover:underline">Edit primary address &rarr;</a>
-    </div>
-
-    <div class="bg-white rounded-2xl border border-forest/10 p-6">
-        <h2 class="font-semibold mb-3 text-forest">Secondary address</h2>
-        {% for address in addresses %}
-            {% if address.address_type == "secondary" %}
-                <p class="text-sm">{{ address.full_name }}</p>
-                <p class="text-sm text-forest/60">{{ address.street_address }}, {{ address.city_town }}</p>
-                <p class="text-sm text-forest/60">{{ address.get_region_display }}</p>
-                <p class="text-sm text-forest/60">{{ address.phone_number }}</p>
+        </div>
+        <p class="text-sm">{{ address.full_name }}</p>
+        <p class="text-sm text-forest/60">{{ address.street_address }}, {{ address.city_town }}</p>
+        <p class="text-sm text-forest/60">{{ address.get_region_display }}</p>
+        <p class="text-sm text-forest/60">{{ address.phone_number }}</p>
+        <div class="flex gap-4 mt-4 text-sm">
+            <a href="{% url 'accounts:address_edit' address.pk %}" class="font-medium text-gold hover:underline">Edit</a>
+            {% if not address.is_default %}
+            <form method="post" action="{% url 'accounts:address_set_default' address.pk %}">
+                {% csrf_token %}
+                <button class="font-medium text-gold hover:underline">Set as default</button>
+            </form>
             {% endif %}
-        {% endfor %}
-        <a href="{% url 'accounts:address_edit' 'secondary' %}" class="inline-block mt-4 text-sm font-medium text-gold hover:underline">Edit secondary address &rarr;</a>
+            <a href="{% url 'accounts:address_delete' address.pk %}" class="font-medium text-clayred hover:underline">Delete</a>
+        </div>
     </div>
+    {% endfor %}
 </div>
 {% endblock %}

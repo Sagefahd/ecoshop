@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import PhoneNumberForm, OTPVerifyForm, AddressForm
 from .models import OTP, Address
@@ -93,28 +93,66 @@ def address_list(request):
 
 
 @login_required
-def address_edit(request, address_type):
-    """Create/update the user's primary or secondary address."""
-    if address_type not in ("primary", "secondary"):
-        return redirect("accounts:address_list")
+def address_create(request):
+    """Add a new address to the user's address book."""
+    next_url = request.GET.get("next")
+    if request.method == "POST":
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
+            messages.success(request, "Address saved.")
+            return redirect(request.POST.get("next") or "accounts:address_list")
+    else:
+        form = AddressForm(initial={"is_default": not request.user.addresses.exists()})
 
-    instance = Address.objects.filter(user=request.user, address_type=address_type).first()
+    return render(request, "accounts/address_form.html", {
+        "form": form, "mode": "create", "next_url": next_url,
+    })
+
+
+@login_required
+def address_edit(request, pk):
+    """Edit one address from the user's address book."""
+    instance = get_object_or_404(Address, pk=pk, user=request.user)
+    next_url = request.GET.get("next")
 
     if request.method == "POST":
         form = AddressForm(request.POST, instance=instance)
         if form.is_valid():
-            address = form.save(commit=False)
-            address.user = request.user
-            address.address_type = address_type
-            address.is_default = True
-            address.save()
-            messages.success(request, f"{address_type.title()} address saved.")
-            next_url = request.GET.get("next")
-            return redirect(next_url or "accounts:address_list")
+            form.save()
+            messages.success(request, "Address updated.")
+            return redirect(request.POST.get("next") or "accounts:address_list")
     else:
         form = AddressForm(instance=instance)
 
     return render(request, "accounts/address_form.html", {
-        "form": form,
-        "address_type": address_type,
+        "form": form, "mode": "edit", "address": instance, "next_url": next_url,
     })
+
+
+@login_required
+def address_delete(request, pk):
+    address = get_object_or_404(Address, pk=pk, user=request.user)
+    if request.method == "POST":
+        was_default = address.is_default
+        address.delete()
+        if was_default:
+            fallback = request.user.addresses.first()
+            if fallback:
+                fallback.is_default = True
+                fallback.save(update_fields=["is_default"])
+        messages.info(request, "Address removed.")
+        return redirect("accounts:address_list")
+    return render(request, "accounts/address_confirm_delete.html", {"address": address})
+
+
+@login_required
+def address_set_default(request, pk):
+    address = get_object_or_404(Address, pk=pk, user=request.user)
+    if request.method == "POST":
+        address.is_default = True
+        address.save()  # save() handles unsetting the previous default
+        messages.success(request, "Default address updated.")
+    return redirect("accounts:address_list")

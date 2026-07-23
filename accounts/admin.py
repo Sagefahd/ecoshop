@@ -22,6 +22,6 @@ class OTPAdmin(admin.ModelAdmin):
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ("user", "address_type", "full_name", "region", "city_town", "is_default")
-    list_filter = ("address_type", "region")
+    list_display = ("user", "label", "full_name", "region", "city_town", "is_default")
+    list_filter = ("region", "is_default")
     search_fields = ("full_name", "user__username", "phone_number")

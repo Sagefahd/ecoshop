@@ -27,28 +27,12 @@ class Category(models.Model):
         return self.name
 
 
-class Vendor(models.Model):
-    """A seller/store. Kept separate from User so one account could manage a store profile."""
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vendor_profile")
-    store_name = models.CharField(max_length=150)
-    slug = models.SlugField(max_length=170, unique=True, blank=True)
-    logo = models.ImageField(upload_to="vendors/", blank=True, null=True)
-    whatsapp_number = models.CharField(max_length=15, blank=True,
-                                        help_text="233XXXXXXXXX - shown to customers for support")
-    is_approved = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.store_name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.store_name
-
-
 class Product(models.Model):
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name="products")
+    """
+    EcoShop is a single online shop (not a multi-vendor marketplace) — every
+    product belongs to the shop as a whole. Any account with staff/vendor
+    access manages this same shared catalog; products are not scoped per user.
+    """
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="products")
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True)

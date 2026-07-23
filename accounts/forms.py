@@ -54,10 +54,11 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = [
-            "full_name", "phone_number", "region", "city_town",
-            "street_address", "digital_address", "landmark",
+            "label", "full_name", "phone_number", "region", "city_town",
+            "street_address", "digital_address", "landmark", "is_default",
         ]
         widgets = {
+            "label": forms.TextInput(attrs={"class": "input", "placeholder": "e.g. Home, Office (optional)"}),
             "full_name": forms.TextInput(attrs={"class": "input", "placeholder": "Full name"}),
             "phone_number": forms.TextInput(attrs={"class": "input", "placeholder": "Active phone number"}),
             "region": forms.Select(attrs={"class": "input"}),
@@ -65,6 +66,7 @@ class AddressForm(forms.ModelForm):
             "street_address": forms.TextInput(attrs={"class": "input", "placeholder": "Street address"}),
             "digital_address": forms.TextInput(attrs={"class": "input", "placeholder": "GA-123-4567 (optional)"}),
             "landmark": forms.TextInput(attrs={"class": "input", "placeholder": "Nearby landmark (optional)"}),
+            "is_default": forms.CheckboxInput(attrs={"class": "checkbox"}),
         }
 
     def clean_phone_number(self):

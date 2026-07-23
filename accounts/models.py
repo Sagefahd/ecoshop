@@ -62,16 +62,13 @@ class OTP(models.Model):
 
 class Address(models.Model):
     """
-    A user can have multiple addresses but at checkout we require exactly
-    one PRIMARY and one SECONDARY (backup delivery contact) address.
+    A flexible address book: a user can save any number of addresses
+    (home, office, a relative's place, etc.), give each a short label, and
+    mark one as the default used to pre-fill checkout.
     """
-    ADDRESS_TYPE = [
-        ("primary", "Primary"),
-        ("secondary", "Secondary"),
-    ]
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
-    address_type = models.CharField(max_length=10, choices=ADDRESS_TYPE)
+    label = models.CharField(max_length=40, blank=True,
+                              help_text="Optional short label, e.g. 'Home', 'Office'")
     full_name = models.CharField(max_length=120)
     phone_number = models.CharField(max_length=15, help_text="Active phone number for this address")
     region = models.CharField(max_length=30, choices=GHANA_REGIONS)
@@ -83,14 +80,18 @@ class Address(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["user", "address_type"],
-                condition=models.Q(is_default=True),
-                name="unique_default_address_per_type",
-            )
-        ]
+        ordering = ["-is_default", "-created_at"]
         verbose_name_plural = "Addresses"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_default:
+            # Only one default per user — unset any others.
+            Address.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        elif not Address.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).exists():
+            # Every user needs exactly one default once they have any address.
+            Address.objects.filter(pk=self.pk).update(is_default=True)
+
     def __str__(self):
-        return f"{self.get_address_type_display()} - {self.full_name} ({self.get_region_display()})"
+        label = self.label or self.get_region_display()
+        return f"{label} - {self.full_name} ({self.get_region_display()})"

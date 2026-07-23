@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { font-family: 'Inter', sans-serif; }
+  h1, h2, h3, .font-display { font-family: 'Fraunces', serif; }
+}
+
+@layer components {
+  /* Forms reference class="input"/"checkbox" directly — these must stay
+     defined or every field silently loses its border/background and
+     becomes invisible until clicked (Tailwind's reset zeroes borders). */
+  .input {
+    @apply w-full bg-white border border-forest/20 rounded-lg px-3 py-2.5 text-sm
+           text-forest-dark placeholder-forest/40
+           focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold
+           transition;
+  }
+  .checkbox {
+    @apply h-4 w-4 rounded border-forest/30 text-gold cursor-pointer
+           focus:outline-none focus:ring-2 focus:ring-gold;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-forest hover:bg-forest-light
+           text-sand font-semibold py-3 px-6 rounded-full transition;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center border border-forest/20
+           hover:border-gold hover:text-gold text-forest font-medium py-2.5 px-5
+           rounded-full transition;
+  }
+  .card {
+    @apply bg-white rounded-2xl border border-forest/10 shadow-sm;
+  }
+}

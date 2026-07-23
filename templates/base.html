@@ -4,33 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}EShop Ghana{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              forest: { DEFAULT: '#163832', dark: '#0E2622', light: '#1F4D3A' },
-              gold: { DEFAULT: '#C89B3C', light: '#E4C878' },
-              clayred: '#8C2F39',
-              sand: '#FBF8F2',
-            },
-            fontFamily: {
-              display: ['"Fraunces"', 'serif'],
-              body: ['"Inter"', 'sans-serif'],
-            }
-          }
-        }
-      }
-    </script>
+    <title>{% block title %}EcoShop Ghana{% endblock %}</title>
+    <link rel="preload" as="style" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-      body { font-family: 'Inter', sans-serif; }
-      h1, h2, h3, .font-display { font-family: 'Fraunces', serif; }
-    </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-sand text-forest-dark min-h-screen flex flex-col">
@@ -41,7 +21,7 @@
 
             <form action="{% url 'catalog:product_list' %}" method="get" class="flex-1 hidden md:flex">
                 <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
-                       class="w-full rounded-l-full px-4 py-2 text-forest-dark focus:outline-none focus:ring-2 focus:ring-gold">
+                       class="w-full rounded-l-full px-4 py-2 bg-white border border-r-0 border-white text-forest-dark placeholder-forest/40 focus:outline-none focus:ring-2 focus:ring-gold">
                 <button class="bg-gold hover:bg-gold-light text-forest-dark font-semibold px-5 rounded-r-full transition">Search</button>
             </form>
 
@@ -63,12 +43,17 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l3.6-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
+                    {% if cart_count > 0 %}
+                    <span class="absolute -top-2 -right-2 bg-gold text-forest-dark text-[11px] font-bold leading-none rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                        {{ cart_count }}
+                    </span>
+                    {% endif %}
                 </a>
             </nav>
         </div>
         <form action="{% url 'catalog:product_list' %}" method="get" class="flex md:hidden px-4 pb-3">
             <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
-                   class="w-full rounded-l-full px-4 py-2 text-forest-dark focus:outline-none">
+                   class="w-full rounded-l-full px-4 py-2 bg-white border border-r-0 border-white text-forest-dark placeholder-forest/40 focus:outline-none">
             <button class="bg-gold text-forest-dark font-semibold px-5 rounded-r-full">Go</button>
         </form>
     </header>

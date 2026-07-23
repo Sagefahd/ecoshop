@@ -1,5 +1,5 @@
 {% extends "vendor/_dashboard_base.html" %}
-{% block title %}Order {{ order.order_id }} — {{ request.user.vendor_profile.store_name }}{% endblock %}
+{% block title %}Order {{ order.order_id }} — EcoShop Ghana{% endblock %}
 
 {% block dashboard_content %}
 <h1 class="font-display text-2xl font-bold mb-6">Order {{ order.order_id }}</h1>
@@ -26,9 +26,8 @@
 
         <div class="bg-white rounded-2xl border border-forest/10 p-6">
             <h2 class="font-semibold mb-3">Delivery address</h2>
-            <p class="text-sm">{{ order.primary_address.full_name }} &middot; {{ order.primary_address.phone_number }}</p>
-            <p class="text-sm text-forest/60">{{ order.primary_address.street_address }}, {{ order.primary_address.city_town }}, {{ order.primary_address.get_region_display }}</p>
-            <p class="text-xs text-forest/40 mt-2">Backup: {{ order.secondary_address.full_name }} &middot; {{ order.secondary_address.phone_number }}</p>
+            <p class="text-sm">{{ order.delivery_address.full_name }} &middot; {{ order.delivery_address.phone_number }}</p>
+            <p class="text-sm text-forest/60">{{ order.delivery_address.street_address }}, {{ order.delivery_address.city_town }}, {{ order.delivery_address.get_region_display }}</p>
         </div>
     </div>
 
@@ -36,7 +35,7 @@
         <h2 class="font-semibold mb-3">Update status</h2>
         <form method="post" class="space-y-3">
             {% csrf_token %}
-            <select name="status" class="w-full border border-forest/20 rounded-lg px-3 py-2 text-sm">
+            <select name="status" class="input">
                 {% for value, label in order.STATUS_CHOICES %}
                     <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}

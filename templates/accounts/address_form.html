@@ -1,23 +1,30 @@
 {% extends "base.html" %}
-{% block title %}{{ address_type|title }} address — EcoShop Ghana{% endblock %}
+{% block title %}{% if mode == 'edit' %}Edit address{% else %}Add address{% endif %} — EcoShop Ghana{% endblock %}
 
 {% block content %}
 <div class="max-w-lg mx-auto bg-white rounded-2xl border border-forest/10 p-8">
-    <h1 class="font-display text-2xl font-bold mb-6">{{ address_type|title }} address</h1>
+    <h1 class="font-display text-2xl font-bold mb-6">{% if mode == 'edit' %}Edit address{% else %}Add address{% endif %}</h1>
 
     <form method="post" class="space-y-4">
         {% csrf_token %}
+        {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
         {% for field in form %}
         <div>
+            {% if field.name == "is_default" %}
+            <label class="flex items-center gap-2 text-sm font-medium">
+                {{ field }} {{ field.label }}
+            </label>
+            {% else %}
             <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
             {{ field }}
+            {% endif %}
             {% if field.errors %}
                 <p class="text-clayred text-xs mt-1">{{ field.errors.0 }}</p>
             {% endif %}
         </div>
         {% endfor %}
         <button class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition mt-2">
-            Save {{ address_type }} address
+            Save address
         </button>
     </form>
 </div>
