@@ -2,7 +2,7 @@
 {% block title %}{{ product.name }} — EcoShop Ghana{% endblock %}
 
 {% block content %}
-<div class="grid md:grid-cols-2 gap-10 mb-16">
+<div class="grid md:grid-cols-2 gap-6 md:gap-10 mb-12 md:mb-16">
     <div class="aspect-square bg-forest/5 rounded-2xl overflow-hidden">
         {% if product.thumbnail %}
             <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
@@ -13,13 +13,13 @@
 
     <div>
         <p class="text-xs uppercase tracking-widest text-gold font-semibold mb-2">{{ product.category.name|default:"Uncategorized" }}</p>
-        <h1 class="font-display text-3xl font-bold mb-3">{{ product.name }}</h1>
+        <h1 class="font-display text-2xl sm:text-3xl font-bold mb-3">{{ product.name }}</h1>
 
-        <div class="flex items-baseline gap-3 mb-6">
-            <span class="font-display text-3xl font-bold text-forest">GHS {{ product.display_price }}</span>
+        <div class="flex items-baseline gap-3 mb-6 flex-wrap">
+            <span class="font-display text-2xl sm:text-3xl font-bold text-forest">GHS {{ product.display_price }}</span>
             {% if product.active_promo %}
                 <span class="text-lg text-forest/40 line-through">GHS {{ product.price }}</span>
-                <span class="bg-clayred text-white text-xs font-bold px-2 py-1 rounded-full">{{ product.active_promo.name }}</span>
+                <span class="badge-danger">{{ product.active_promo.name }}</span>
             {% endif %}
         </div>
 
@@ -29,19 +29,18 @@
         <form action="{% url 'orders:cart_add' product.id %}" method="post" class="flex items-center gap-3 mb-4">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.path }}">
-            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}"
-                   class="w-20 bg-white border border-forest/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition">
-            <button class="bg-forest hover:bg-forest-light text-sand font-semibold px-6 py-3 rounded-full transition">Add to cart</button>
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="input w-20 text-center">
+            <button class="btn-primary flex-1 sm:flex-none">Add to cart</button>
         </form>
         <p class="text-xs text-forest/50">{{ product.stock_quantity }} in stock</p>
         {% else %}
-        <p class="text-clayred font-medium">Currently out of stock</p>
+        <p class="badge-danger">Currently out of stock</p>
         {% endif %}
 
-        {% if product.vendor.whatsapp_number %}
-        <a href="https://wa.me/{{ product.vendor.whatsapp_number }}" target="_blank"
+        {% if WHATSAPP_SUPPORT_LINK %}
+        <a href="{{ WHATSAPP_SUPPORT_LINK }}?text=Hi, I have a question about {{ product.name|urlencode }}" target="_blank" rel="noopener"
            class="inline-flex items-center gap-2 mt-6 text-sm text-forest/70 hover:text-[#25D366] transition">
-            Ask the seller a question on WhatsApp &rarr;
+            Ask about this product on WhatsApp &rarr;
         </a>
         {% endif %}
     </div>
@@ -50,7 +49,7 @@
 {% if related %}
 <section>
     <h2 class="font-display text-xl font-bold mb-4">You might also like</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
         {% for product in related %}
             {% include "catalog/_product_card.html" %}
         {% endfor %}

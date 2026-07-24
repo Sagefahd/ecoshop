@@ -1,0 +1,14 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Remove promo — EcoShop Ghana{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-md card p-8">
+    <h1 class="font-display text-xl font-bold mb-3">Remove "{{ promo.name }}"?</h1>
+    <p class="text-sm text-forest/60 mb-6">Products in this promo will return to their regular price immediately.</p>
+    <form method="post" class="flex gap-3">
+        {% csrf_token %}
+        <button class="btn-danger text-sm">Yes, delete it</button>
+        <a href="{% url 'vendor:promo_list' %}" class="btn-outline text-sm">Cancel</a>
+    </form>
+</div>
+{% endblock %}

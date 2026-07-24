@@ -1,0 +1,14 @@
+{% extends "vendor/_dashboard_base.html" %}
+{% block title %}Remove category — EcoShop Ghana{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-md card p-8">
+    <h1 class="font-display text-xl font-bold mb-3">Remove "{{ category.name }}"?</h1>
+    <p class="text-sm text-forest/60 mb-6">Products in this category will become uncategorized — they won't be deleted.</p>
+    <form method="post" class="flex gap-3">
+        {% csrf_token %}
+        <button class="btn-danger text-sm">Yes, delete it</button>
+        <a href="{% url 'vendor:category_list' %}" class="btn-outline text-sm">Cancel</a>
+    </form>
+</div>
+{% endblock %}

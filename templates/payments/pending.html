@@ -2,7 +2,8 @@
 {% block title %}Approve payment — EcoShop Ghana{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white rounded-2xl border border-forest/10 p-8 text-center">
+<div class="max-w-md mx-auto card p-6 sm:p-8 text-center">
+    <div id="payment-spinner" class="mx-auto mb-4 h-14 w-14 rounded-full border-4 border-gold/20 border-t-gold animate-spin"></div>
     <h1 class="font-display text-xl font-bold mb-3">Check your phone</h1>
     <p class="text-sm text-forest/60 mb-6">
         We've sent a Mobile Money prompt for order {{ payment.order.order_id }}.
@@ -20,11 +21,17 @@ async function poll() {
     try {
         const res = await fetch(statusUrl);
         const data = await res.json();
+        const spinner = document.getElementById("payment-spinner");
         if (data.status === "successful") {
+            if (spinner) spinner.className = "mx-auto mb-4 h-14 w-14 rounded-full bg-forest-light/10 flex items-center justify-center text-forest-light text-2xl";
             statusEl.textContent = "Payment confirmed! Redirecting…";
+            statusEl.classList.remove("text-gold");
+            statusEl.classList.add("text-forest-light");
             window.location.href = orderStatusUrl;
         } else if (data.status === "failed") {
+            if (spinner) spinner.className = "mx-auto mb-4 h-14 w-14 rounded-full bg-clayred/10 flex items-center justify-center text-clayred text-2xl";
             statusEl.textContent = "Payment failed or was declined.";
+            statusEl.classList.remove("text-gold");
             statusEl.classList.add("text-clayred");
         } else {
             setTimeout(poll, 3000);

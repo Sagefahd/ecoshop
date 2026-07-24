@@ -3,48 +3,48 @@
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="font-display text-2xl font-bold">Order {{ order.order_id }}</h1>
-        <span class="text-sm font-medium px-3 py-1 rounded-full
-            {% if order.status == 'delivered' %} bg-forest-light/10 text-forest-light
-            {% elif order.status == 'cancelled' %} bg-clayred/10 text-clayred
-            {% else %} bg-gold/10 text-gold {% endif %}">
+    <div class="flex items-center justify-between gap-3 mb-6">
+        <h1 class="font-display text-xl sm:text-2xl font-bold">Order {{ order.order_id }}</h1>
+        <span class="{% if order.status == 'delivered' %}badge-success{% elif order.status == 'cancelled' %}badge-danger{% else %}badge-warning{% endif %}">
             {{ order.get_status_display }}
         </span>
     </div>
 
-    <!-- Status tracker -->
-    <div class="bg-white rounded-2xl border border-forest/10 p-6 mb-6">
-        <div class="flex justify-between">
+    <!-- Status tracker: vertical on mobile, horizontal on desktop -->
+    <div class="card p-6 mb-6">
+        {% if order.status == 'cancelled' %}
+            <p class="text-clayred text-sm font-medium">This order was cancelled.</p>
+        {% else %}
+        <div class="flex flex-col md:flex-row md:justify-between gap-4 md:gap-0">
             {% for step, label in order.STATUS_CHOICES %}
                 {% if step != "cancelled" %}
-                <div class="flex-1 text-center">
-                    <div class="mx-auto mb-2 h-3 w-3 rounded-full
-                        {% if order.status == step %}bg-gold{% elif forloop.counter0 < order.STATUS_CHOICES|length %}bg-forest/20{% endif %}"></div>
-                    <p class="text-xs text-forest/60">{{ label }}</p>
+                <div class="flex md:flex-col items-center md:text-center gap-3 md:gap-2 md:flex-1">
+                    <div class="h-3 w-3 rounded-full shrink-0 {% if order.status == step %}bg-gold{% else %}bg-forest/20{% endif %}"></div>
+                    <p class="text-sm md:text-xs text-forest/70 md:text-forest/60">{{ label }}</p>
                 </div>
                 {% endif %}
             {% endfor %}
         </div>
+        {% endif %}
     </div>
 
     <div class="grid md:grid-cols-2 gap-6 mb-6">
-        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+        <div class="card p-6">
             <h2 class="font-semibold mb-3">Order details</h2>
-            <dl class="text-sm space-y-1">
+            <dl class="text-sm space-y-1.5">
                 <div class="flex justify-between"><dt class="text-forest/60">Order ID</dt><dd>{{ order.order_id }}</dd></div>
                 <div class="flex justify-between"><dt class="text-forest/60">Date placed</dt><dd>{{ order.created_at|date:"M d, Y H:i" }}</dd></div>
                 <div class="flex justify-between"><dt class="text-forest/60">Quantity</dt><dd>{{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</dd></div>
                 <div class="flex justify-between"><dt class="text-forest/60">Subtotal</dt><dd>GHS {{ order.subtotal }}</dd></div>
                 <div class="flex justify-between"><dt class="text-forest/60">Delivery fee</dt><dd>GHS {{ order.delivery_fee }}</dd></div>
-                <div class="flex justify-between font-semibold border-t border-forest/10 pt-1 mt-1"><dt>Total</dt><dd>GHS {{ order.total }}</dd></div>
+                <div class="flex justify-between font-semibold border-t border-forest/10 pt-2 mt-1"><dt>Total</dt><dd>GHS {{ order.total }}</dd></div>
             </dl>
         </div>
 
-        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+        <div class="card p-6">
             <h2 class="font-semibold mb-3">Delivery to</h2>
             <p class="text-sm">{{ order.delivery_address.full_name }} &middot; {{ order.delivery_address.phone_number }}</p>
-            <p class="text-sm text-forest/60 mb-3">{{ order.delivery_address.street_address }}, {{ order.delivery_address.city_town }}, {{ order.delivery_address.get_region_display }}</p>
+            <p class="text-sm text-forest/60">{{ order.delivery_address.street_address }}, {{ order.delivery_address.city_town }}, {{ order.delivery_address.get_region_display }}</p>
         </div>
     </div>
 
@@ -54,7 +54,7 @@
     </div>
     {% endif %}
 
-    <div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+    <div class="card divide-y divide-forest/10">
         {% for item in order.items.all %}
         <div class="flex justify-between p-4 text-sm">
             <span>{{ item.quantity }} &times; {{ item.product_name }}</span>

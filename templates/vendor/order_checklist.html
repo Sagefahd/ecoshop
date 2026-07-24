@@ -4,30 +4,36 @@
 {% block dashboard_content %}
 <h1 class="font-display text-2xl font-bold mb-6">Orders</h1>
 
-<div class="flex gap-2 mb-6">
-    <a href="?status=pending" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'pending' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Pending</a>
-    <a href="?status=completed" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'completed' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Completed</a>
-    <a href="?status=cancelled" class="px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'cancelled' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Cancelled</a>
+<div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+    <div class="flex gap-2 overflow-x-auto">
+        <a href="?status=pending" class="shrink-0 px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'pending' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Pending</a>
+        <a href="?status=completed" class="shrink-0 px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'completed' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Completed</a>
+        <a href="?status=cancelled" class="shrink-0 px-4 py-2 rounded-full text-sm font-medium {% if status_filter == 'cancelled' %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">Cancelled</a>
+    </div>
+    <form method="get" class="sm:ml-auto flex gap-2">
+        <input type="hidden" name="status" value="{{ status_filter }}">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search order ID or phone..." class="input sm:w-64">
+    </form>
 </div>
 
-<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+<div class="card divide-y divide-forest/10">
     {% for order in orders %}
-    <div class="flex items-center gap-4 p-4">
-        <input type="checkbox" {% if order.status == 'delivered' %}checked{% endif %} disabled class="accent-gold h-4 w-4">
-        <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex-1 hover:text-gold transition">
-            <p class="text-sm font-medium">{{ order.order_id }} &middot; {{ order.user.phone_number }}</p>
-            <p class="text-xs text-forest/50">{{ order.created_at|date:"M d, Y" }} &middot; {{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</p>
-        </a>
-        <span class="font-semibold text-sm">GHS {{ order.total }}</span>
-        <span class="text-xs font-medium px-2 py-1 rounded-full
-            {% if order.status == 'delivered' %} bg-forest-light/10 text-forest-light
-            {% elif order.status == 'cancelled' %} bg-clayred/10 text-clayred
-            {% else %} bg-gold/10 text-gold {% endif %}">
+    <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex flex-wrap items-center gap-3 p-4 hover:bg-forest/5 transition text-sm">
+        <div class="icon-badge bg-forest/5 text-forest/60 h-9 w-9">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /></svg>
+        </div>
+        <div class="flex-1 min-w-[140px]">
+            <p class="font-medium">{{ order.order_id }}</p>
+            <p class="text-xs text-forest/50">{{ order.user.phone_number }} &middot; {{ order.created_at|date:"M d, Y" }}</p>
+        </div>
+        <span class="text-forest/50">{{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</span>
+        <span class="font-semibold">GHS {{ order.total }}</span>
+        <span class="{% if order.status == 'delivered' %}badge-success{% elif order.status == 'cancelled' %}badge-danger{% else %}badge-warning{% endif %}">
             {{ order.get_status_display }}
         </span>
-    </div>
+    </a>
     {% empty %}
-    <p class="p-5 text-sm text-forest/50">No orders in this view.</p>
+    <p class="p-8 text-sm text-forest/50 text-center">No orders in this view.</p>
     {% endfor %}
 </div>
 {% endblock %}

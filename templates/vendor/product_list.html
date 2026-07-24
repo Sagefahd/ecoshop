@@ -2,34 +2,42 @@
 {% block title %}Products — EcoShop Ghana{% endblock %}
 
 {% block dashboard_content %}
-<div class="flex items-center justify-between mb-6">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
     <h1 class="font-display text-2xl font-bold">Products</h1>
-    <a href="{% url 'vendor:product_create' %}" class="bg-forest hover:bg-forest-light text-sand font-semibold px-5 py-2 rounded-full transition text-sm">+ Add product</a>
+    <a href="{% url 'vendor:product_create' %}" class="btn-primary text-sm">+ Add product</a>
 </div>
 
-<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+<form method="get" class="mb-6">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or SKU..." class="input max-w-sm">
+</form>
+
+<div class="card divide-y divide-forest/10">
     {% for product in products %}
-    <div class="flex items-center gap-4 p-4">
+    <div class="flex flex-wrap items-center gap-4 p-4">
         <div class="w-12 h-12 bg-forest/5 rounded-lg overflow-hidden shrink-0">
             {% if product.thumbnail %}<img src="{{ product.thumbnail.url }}" class="w-full h-full object-cover">{% endif %}
         </div>
-        <div class="flex-1">
+        <div class="flex-1 min-w-[160px]">
             <p class="text-sm font-medium">{{ product.name }}</p>
             <p class="text-xs text-forest/50">{{ product.category.name|default:"Uncategorized" }} &middot; SKU {{ product.sku }}</p>
         </div>
         <span class="text-sm">GHS {{ product.price }}</span>
         <span class="text-sm {% if product.stock_quantity <= 5 %}text-clayred font-semibold{% endif %}">{{ product.stock_quantity }} in stock</span>
-        <span class="text-xs font-medium px-2 py-1 rounded-full {% if product.is_active %}bg-forest-light/10 text-forest-light{% else %}bg-forest/10 text-forest/50{% endif %}">
+        <span class="{% if product.is_active %}badge-success{% else %}badge-neutral{% endif %}">
             {% if product.is_active %}Active{% else %}Hidden{% endif %}
         </span>
-        <a href="{% url 'vendor:product_toggle_active' product.id %}" class="text-xs text-forest/60 hover:underline">
-            {% if product.is_active %}Hide{% else %}Show{% endif %}
-        </a>
-        <a href="{% url 'vendor:product_edit' product.id %}" class="text-xs text-gold hover:underline">Edit</a>
-        <a href="{% url 'vendor:product_delete' product.id %}" class="text-xs text-clayred hover:underline">Delete</a>
+        <div class="flex gap-3 text-xs">
+            <a href="{% url 'vendor:product_toggle_active' product.id %}" class="text-forest/60 hover:underline">
+                {% if product.is_active %}Hide{% else %}Show{% endif %}
+            </a>
+            <a href="{% url 'vendor:product_edit' product.id %}" class="text-gold hover:underline">Edit</a>
+            <a href="{% url 'vendor:product_delete' product.id %}" class="text-clayred hover:underline">Delete</a>
+        </div>
     </div>
     {% empty %}
-    <p class="p-5 text-sm text-forest/50">You haven't added any products yet.</p>
+    <p class="p-8 text-sm text-forest/50 text-center">
+        {% if query %}No products match "{{ query }}".{% else %}You haven't added any products yet.{% endif %}
+    </p>
     {% endfor %}
 </div>
 {% endblock %}

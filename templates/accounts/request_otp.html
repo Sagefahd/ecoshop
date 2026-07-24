@@ -2,7 +2,7 @@
 {% block title %}Log in — EcoShop Ghana{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white rounded-2xl border border-forest/10 p-8 mt-8">
+<div class="max-w-md mx-auto card p-6 sm:p-8 mt-8">
     <h1 class="font-display text-2xl font-bold mb-2">Log in or sign up</h1>
     <p class="text-sm text-forest/60 mb-6">We'll text you a one-time code to confirm it's you.</p>
 
@@ -13,10 +13,10 @@
             <label class="block text-sm font-medium mb-1">{{ form.phone_number.label }}</label>
             {{ form.phone_number }}
             {% if form.phone_number.errors %}
-                <p class="text-clayred text-xs mt-1">{{ form.phone_number.errors.0 }}</p>
+                <p class="field-error"><svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>{{ form.phone_number.errors.0 }}</p>
             {% endif %}
         </div>
-        <button class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition">Send code</button>
+        <button class="btn-primary w-full">Send code</button>
     </form>
 
     <div class="flex items-center gap-3 my-6">
@@ -27,11 +27,11 @@
 
     <div class="space-y-3">
         <a href="/accounts/social/google/login/{% if next_url %}?next={{ next_url }}{% endif %}"
-           class="flex items-center justify-center gap-2 border border-forest/20 rounded-full py-3 text-sm font-medium hover:border-gold transition">
+           class="btn-outline w-full">
             Continue with Google
         </a>
         <a href="/accounts/social/apple/login/{% if next_url %}?next={{ next_url }}{% endif %}"
-           class="flex items-center justify-center gap-2 border border-forest/20 rounded-full py-3 text-sm font-medium hover:border-gold transition">
+           class="btn-outline w-full">
             Continue with Apple
         </a>
     </div>

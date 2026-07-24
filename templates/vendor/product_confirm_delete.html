@@ -2,13 +2,13 @@
 {% block title %}Remove product — EcoShop Ghana{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-md bg-white rounded-2xl border border-forest/10 p-8">
+<div class="max-w-md card p-8">
     <h1 class="font-display text-xl font-bold mb-3">Remove "{{ product.name }}"?</h1>
     <p class="text-sm text-forest/60 mb-6">This will permanently delete this product from your store. Order history referencing it will keep a snapshot of its name and price.</p>
     <form method="post" class="flex gap-3">
         {% csrf_token %}
-        <button class="bg-clayred hover:bg-clayred/90 text-white font-semibold px-5 py-2 rounded-full transition text-sm">Yes, delete it</button>
-        <a href="{% url 'vendor:product_list' %}" class="px-5 py-2 rounded-full text-sm font-medium border border-forest/20 hover:border-forest/40">Cancel</a>
+        <button class="btn-danger text-sm">Yes, delete it</button>
+        <a href="{% url 'vendor:product_list' %}" class="btn-outline text-sm">Cancel</a>
     </form>
 </div>
 {% endblock %}

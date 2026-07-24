@@ -2,8 +2,9 @@
 {% block title %}Shop — EcoShop Ghana{% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row gap-8">
-    <aside class="md:w-56 shrink-0">
+<div class="flex flex-col md:flex-row gap-6 md:gap-8">
+    <!-- Desktop sidebar -->
+    <aside class="hidden md:block md:w-56 shrink-0">
         <h2 class="font-display font-bold text-lg mb-3">Categories</h2>
         <ul class="space-y-1 text-sm">
             <li>
@@ -23,12 +24,26 @@
         </ul>
     </aside>
 
-    <div class="flex-1">
+    <!-- Mobile category pills -->
+    <div class="md:hidden flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
+        <a href="{% url 'catalog:product_list' %}?q={{ query }}"
+           class="shrink-0 px-4 py-2 rounded-full text-sm font-medium {% if not active_category %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">
+            All
+        </a>
+        {% for category in categories %}
+        <a href="{% url 'catalog:product_list' %}?q={{ query }}&category={{ category.slug }}"
+           class="shrink-0 px-4 py-2 rounded-full text-sm font-medium {% if active_category == category.slug %}bg-forest text-sand{% else %}bg-white border border-forest/10{% endif %}">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between mb-6">
-            <h1 class="font-display text-2xl font-bold">
+            <h1 class="font-display text-xl sm:text-2xl font-bold">
                 {% if query %}Results for "{{ query }}"{% else %}All products{% endif %}
             </h1>
-            <span class="text-sm text-forest/50">{{ page_obj.paginator.count }} item{{ page_obj.paginator.count|pluralize }}</span>
+            <span class="text-sm text-forest/50 shrink-0">{{ page_obj.paginator.count }} item{{ page_obj.paginator.count|pluralize }}</span>
         </div>
         {% include "catalog/_product_grid.html" %}
     </div>

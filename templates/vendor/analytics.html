@@ -4,24 +4,49 @@
 {% block dashboard_content %}
 <h1 class="font-display text-2xl font-bold mb-6">Analytics</h1>
 
-<div class="bg-white rounded-2xl border border-forest/10 mb-8">
-    <div class="p-5 border-b border-forest/10">
-        <h2 class="font-semibold">Top-selling products</h2>
-    </div>
-    <div class="divide-y divide-forest/10">
-        {% for row in top_products %}
-        <div class="flex items-center justify-between p-4 text-sm">
-            <span>{{ row.product__name }}</span>
-            <span class="text-forest/50">{{ row.units_sold }} sold</span>
-            <span class="font-semibold">GHS {{ row.revenue }}</span>
+<div class="grid lg:grid-cols-3 gap-6 mb-6">
+    <div class="card lg:col-span-2">
+        <div class="p-5 border-b border-forest/10">
+            <h2 class="font-semibold">Top-selling products</h2>
         </div>
-        {% empty %}
-        <p class="p-5 text-sm text-forest/50">No sales data yet.</p>
-        {% endfor %}
+        <div class="p-5 space-y-4">
+            {% for row in top_products %}
+            <div>
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="font-medium">{{ row.product__name }}</span>
+                    <span class="text-forest/50">{{ row.units_sold }} sold &middot; <span class="font-semibold text-forest">GHS {{ row.revenue }}</span></span>
+                </div>
+                <div class="h-2 bg-forest/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-gold rounded-full" style="width: {{ row.pct }}%"></div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-sm text-forest/50">No sales data yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="p-5 border-b border-forest/10">
+            <h2 class="font-semibold">Payment methods</h2>
+        </div>
+        <div class="divide-y divide-forest/10">
+            {% for row in payment_method_split %}
+            <div class="flex justify-between items-center p-4 text-sm">
+                <span>{{ row.method_label }}</span>
+                <span class="text-right">
+                    <span class="font-semibold block">GHS {{ row.total }}</span>
+                    <span class="text-xs text-forest/40">{{ row.count }} payment{{ row.count|pluralize }}</span>
+                </span>
+            </div>
+            {% empty %}
+            <p class="p-5 text-sm text-forest/50">No successful payments yet.</p>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
-<div class="bg-white rounded-2xl border border-forest/10">
+<div class="card">
     <div class="p-5 border-b border-forest/10">
         <h2 class="font-semibold">Low stock alerts <span class="text-clayred text-xs font-normal">(5 or fewer left)</span></h2>
     </div>
@@ -29,7 +54,7 @@
         {% for product in low_stock %}
         <a href="{% url 'vendor:product_edit' product.id %}" class="flex items-center justify-between p-4 text-sm hover:bg-forest/5 transition">
             <span>{{ product.name }}</span>
-            <span class="font-semibold text-clayred">{{ product.stock_quantity }} left</span>
+            <span class="badge-danger">{{ product.stock_quantity }} left</span>
         </a>
         {% empty %}
         <p class="p-5 text-sm text-forest/50">All products are well stocked.</p>

@@ -1,9 +1,9 @@
 {% extends "vendor/_dashboard_base.html" %}
-{% block title %}{% if mode == 'edit' %}Edit{% else %}Add{% endif %} product — EcoShop Ghana{% endblock %}
+{% block title %}{% if mode == 'edit' %}Edit{% else %}Add{% endif %} category — EcoShop Ghana{% endblock %}
 
 {% block dashboard_content %}
-<a href="{% url 'vendor:product_list' %}" class="text-sm text-forest/50 hover:text-gold transition mb-2 inline-block">&larr; Back to products</a>
-<h1 class="font-display text-2xl font-bold mb-6">{% if mode == 'edit' %}Edit {{ product.name }}{% else %}Add a new product{% endif %}</h1>
+<a href="{% url 'vendor:category_list' %}" class="text-sm text-forest/50 hover:text-gold transition mb-2 inline-block">&larr; Back to categories</a>
+<h1 class="font-display text-2xl font-bold mb-6">{% if mode == 'edit' %}Edit {{ category.name }}{% else %}Add a new category{% endif %}</h1>
 
 <div class="card p-6 max-w-xl">
     <form method="post" enctype="multipart/form-data" class="space-y-4">
@@ -22,7 +22,7 @@
         </div>
         {% endfor %}
         <button class="btn-primary w-full mt-2">
-            {% if mode == 'edit' %}Save changes{% else %}Add product{% endif %}
+            {% if mode == 'edit' %}Save changes{% else %}Add category{% endif %}
         </button>
     </form>
 </div>

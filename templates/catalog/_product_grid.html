@@ -1,21 +1,21 @@
-<div id="product-grid" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+<div id="product-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
     {% for product in products %}
         {% include "catalog/_product_card.html" %}
     {% empty %}
-        <p class="text-forest-dark/60 text-sm col-span-4">No products match your search.</p>
+        <p class="text-forest-dark/60 text-sm col-span-full">No products match your search.</p>
     {% endfor %}
 </div>
 
 {% if page_obj.has_other_pages %}
-<div class="flex justify-center gap-2 mt-8">
+<div class="flex justify-center items-center gap-2 mt-8">
     {% if page_obj.has_previous %}
         <a href="?q={{ query }}&category={{ active_category }}&page={{ page_obj.previous_page_number }}"
-           class="px-4 py-2 rounded-full border border-forest/20 text-sm hover:border-gold">Previous</a>
+           class="btn-outline text-sm py-2 px-4">Previous</a>
     {% endif %}
-    <span class="px-4 py-2 text-sm text-forest/60">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    <span class="px-3 text-sm text-forest/60">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
     {% if page_obj.has_next %}
         <a href="?q={{ query }}&category={{ active_category }}&page={{ page_obj.next_page_number }}"
-           class="px-4 py-2 rounded-full border border-forest/20 text-sm hover:border-gold">Next</a>
+           class="btn-outline text-sm py-2 px-4">Next</a>
     {% endif %}
 </div>
 {% endif %}

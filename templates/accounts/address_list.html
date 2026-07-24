@@ -8,18 +8,18 @@
 </div>
 
 {% if not addresses %}
-<div class="bg-white rounded-2xl border border-forest/10 p-6 text-sm text-forest/60">
+<div class="card p-6 text-sm text-forest/60">
     You haven't saved an address yet. Add one before checking out.
 </div>
 {% endif %}
 
 <div class="grid md:grid-cols-2 gap-6">
     {% for address in addresses %}
-    <div class="bg-white rounded-2xl border border-forest/10 p-6">
+    <div class="card-hover p-6">
         <div class="flex items-center justify-between mb-3">
             <h2 class="font-semibold text-forest">{{ address.label|default:"Address" }}</h2>
             {% if address.is_default %}
-            <span class="text-xs font-medium px-2 py-1 rounded-full bg-gold/10 text-gold">Default</span>
+            <span class="badge-warning">Default</span>
             {% endif %}
         </div>
         <p class="text-sm">{{ address.full_name }}</p>

@@ -2,30 +2,30 @@
 {% block title %}Payment — EcoShop Ghana{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white rounded-2xl border border-forest/10 p-8">
+<div class="max-w-md mx-auto card p-6 sm:p-8">
     <h1 class="font-display text-2xl font-bold mb-2">Pay for order {{ order.order_id }}</h1>
     <p class="text-sm text-forest/60 mb-6">Total: <span class="font-semibold text-forest">GHS {{ order.total }}</span></p>
     <p class="text-xs text-forest/50 mb-4">We'll send a Mobile Money prompt to {{ order.delivery_address.phone_number }} — approve it with your MoMo PIN to complete payment.</p>
 
     <form method="post" class="space-y-3">
         {% csrf_token %}
-        <label class="flex items-center gap-3 border border-forest/20 rounded-xl p-4 cursor-pointer hover:border-gold transition">
+        <label class="flex items-center gap-3 border border-forest/15 rounded-xl p-4 cursor-pointer hover:border-gold hover:shadow-sm transition">
             <input type="radio" name="method" value="nalo_mtn" checked class="accent-gold">
             <span>MTN Mobile Money</span>
         </label>
-        <label class="flex items-center gap-3 border border-forest/20 rounded-xl p-4 cursor-pointer hover:border-gold transition">
+        <label class="flex items-center gap-3 border border-forest/15 rounded-xl p-4 cursor-pointer hover:border-gold hover:shadow-sm transition">
             <input type="radio" name="method" value="nalo_vodafone" class="accent-gold">
             <span>Vodafone Cash</span>
         </label>
-        <label class="flex items-center gap-3 border border-forest/20 rounded-xl p-4 cursor-pointer hover:border-gold transition">
+        <label class="flex items-center gap-3 border border-forest/15 rounded-xl p-4 cursor-pointer hover:border-gold hover:shadow-sm transition">
             <input type="radio" name="method" value="nalo_airteltigo" class="accent-gold">
             <span>AirtelTigo Money</span>
         </label>
-        <label class="flex items-center gap-3 border border-forest/20 rounded-xl p-4 cursor-pointer hover:border-gold transition">
+        <label class="flex items-center gap-3 border border-forest/15 rounded-xl p-4 cursor-pointer hover:border-gold hover:shadow-sm transition">
             <input type="radio" name="method" value="cash_on_delivery" class="accent-gold">
             <span>Cash on delivery</span>
         </label>
-        <button class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition mt-4">
+        <button class="btn-primary w-full mt-4">
             Confirm payment method
         </button>
     </form>

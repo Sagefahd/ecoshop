@@ -1,12 +1,12 @@
 {% extends "vendor/_dashboard_base.html" %}
-{% block title %}{% if mode == 'edit' %}Edit{% else %}Add{% endif %} product — EcoShop Ghana{% endblock %}
+{% block title %}{% if mode == 'edit' %}Edit{% else %}Create{% endif %} promo — EcoShop Ghana{% endblock %}
 
 {% block dashboard_content %}
-<a href="{% url 'vendor:product_list' %}" class="text-sm text-forest/50 hover:text-gold transition mb-2 inline-block">&larr; Back to products</a>
-<h1 class="font-display text-2xl font-bold mb-6">{% if mode == 'edit' %}Edit {{ product.name }}{% else %}Add a new product{% endif %}</h1>
+<a href="{% url 'vendor:promo_list' %}" class="text-sm text-forest/50 hover:text-gold transition mb-2 inline-block">&larr; Back to promos</a>
+<h1 class="font-display text-2xl font-bold mb-6">{% if mode == 'edit' %}Edit {{ promo.name }}{% else %}Create a promo{% endif %}</h1>
 
 <div class="card p-6 max-w-xl">
-    <form method="post" enctype="multipart/form-data" class="space-y-4">
+    <form method="post" class="space-y-4">
         {% csrf_token %}
         {% for field in form %}
         <div>
@@ -16,13 +16,16 @@
             </label>
             {% else %}
             <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+            {% if field.name == "products" %}
+                <p class="text-xs text-forest/40 mb-1">Hold Ctrl (or Cmd) to select multiple products</p>
+            {% endif %}
             {{ field }}
             {% endif %}
             {% if field.errors %}<p class="text-clayred text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
         </div>
         {% endfor %}
         <button class="btn-primary w-full mt-2">
-            {% if mode == 'edit' %}Save changes{% else %}Add product{% endif %}
+            {% if mode == 'edit' %}Save changes{% else %}Create promo{% endif %}
         </button>
     </form>
 </div>

@@ -12,25 +12,81 @@
      defined or every field silently loses its border/background and
      becomes invisible until clicked (Tailwind's reset zeroes borders). */
   .input {
-    @apply w-full bg-white border border-forest/20 rounded-lg px-3 py-2.5 text-sm
-           text-forest-dark placeholder-forest/40
-           focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold
+    @apply w-full bg-white border border-forest/15 rounded-xl px-4 py-3 text-sm
+           text-forest-dark placeholder-forest/40 shadow-sm
+           focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold
            transition;
   }
   .checkbox {
     @apply h-4 w-4 rounded border-forest/30 text-gold cursor-pointer
-           focus:outline-none focus:ring-2 focus:ring-gold;
+           focus:outline-none focus:ring-2 focus:ring-gold/50;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center bg-forest hover:bg-forest-light
-           text-sand font-semibold py-3 px-6 rounded-full transition;
+    @apply inline-flex items-center justify-center gap-2 bg-forest hover:bg-forest-light
+           text-sand font-semibold py-3.5 px-6 rounded-full shadow-sm hover:shadow-md
+           transition-all active:scale-[0.98];
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center border border-forest/20
-           hover:border-gold hover:text-gold text-forest font-medium py-2.5 px-5
-           rounded-full transition;
+    @apply inline-flex items-center justify-center gap-2 border border-forest/15 bg-white
+           hover:border-gold hover:text-gold text-forest font-medium py-3 px-5
+           rounded-full transition-all active:scale-[0.98];
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 bg-clayred hover:bg-clayred/90
+           text-white font-semibold py-3 px-5 rounded-full transition-all active:scale-[0.98];
   }
   .card {
     @apply bg-white rounded-2xl border border-forest/10 shadow-sm;
+  }
+  .card-hover {
+    @apply card transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full;
+  }
+  .badge-success { @apply badge bg-forest-light/10 text-forest-light; }
+  .badge-warning { @apply badge bg-gold/10 text-gold; }
+  .badge-danger  { @apply badge bg-clayred/10 text-clayred; }
+  .badge-neutral { @apply badge bg-forest/10 text-forest/50; }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sand/70
+           hover:bg-white/10 hover:text-sand transition;
+  }
+  .sidebar-link-active {
+    @apply sidebar-link bg-gold text-forest-dark hover:bg-gold hover:text-forest-dark;
+  }
+  .stat-card {
+    @apply card-hover p-5 flex items-start justify-between gap-3;
+  }
+  .icon-badge {
+    @apply h-10 w-10 rounded-xl flex items-center justify-center shrink-0;
+  }
+
+  /* Toast notifications */
+  .toast {
+    @apply flex items-start gap-3 w-full sm:w-96 bg-white rounded-2xl shadow-lg border
+           px-4 py-3.5 pointer-events-auto;
+    animation: toast-in 0.25s ease-out;
+  }
+  .toast.toast-out {
+    animation: toast-out 0.2s ease-in forwards;
+  }
+  .toast-success { @apply border-forest-light/30; }
+  .toast-error   { @apply border-clayred/30; }
+  .toast-warning { @apply border-gold/40; }
+
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes toast-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(-12px) scale(0.98); }
+  }
+
+  /* Field-level error text under inputs */
+  .field-error {
+    @apply text-clayred text-xs mt-1.5 flex items-center gap-1;
   }
 }

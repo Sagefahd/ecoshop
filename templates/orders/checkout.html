@@ -8,7 +8,7 @@
 {% csrf_token %}
 <div class="grid md:grid-cols-3 gap-8">
     <div class="md:col-span-2 space-y-6">
-        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+        <div class="card p-6">
             <div class="flex items-center justify-between mb-3">
                 <h2 class="font-semibold">Delivery address</h2>
                 <a href="{% url 'accounts:address_create' %}?next={% url 'orders:checkout' %}" class="text-xs text-gold hover:underline">+ Add new</a>
@@ -16,8 +16,8 @@
             {% if addresses %}
             <div class="space-y-2">
                 {% for a in addresses %}
-                <label class="flex items-start gap-3 border border-forest/10 rounded-lg p-3 text-sm cursor-pointer">
-                    <input type="radio" name="address_id" value="{{ a.pk }}" class="mt-1"
+                <label class="flex items-start gap-3 border border-forest/10 rounded-xl p-4 text-sm cursor-pointer hover:border-gold transition">
+                    <input type="radio" name="address_id" value="{{ a.pk }}" class="mt-1 accent-gold h-4 w-4"
                            {% if address.pk == a.pk %}checked{% endif %}>
                     <span>
                         <span class="font-medium">{{ a.label|default:"Address" }}</span> &middot; {{ a.full_name }} &middot; {{ a.phone_number }}<br>
@@ -31,14 +31,14 @@
             {% endif %}
         </div>
 
-        <div class="bg-white rounded-2xl border border-forest/10 p-6">
+        <div class="card p-6">
             <h2 class="font-semibold mb-3">Note to seller <span class="text-forest/40 font-normal">(optional)</span></h2>
             <textarea name="note_to_seller" rows="3" placeholder="e.g. specific size, color, or delivery instructions"
                       class="input"></textarea>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-forest/10 p-6 h-fit">
+    <div class="card p-6 h-fit">
         <h2 class="font-semibold mb-4">Order summary</h2>
         <div class="space-y-2 mb-4">
             {% for item in cart.items.all %}
@@ -52,7 +52,7 @@
             <span>Total</span>
             <span>GHS {{ cart.total }}</span>
         </div>
-        <button type="submit" class="w-full bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition">
+        <button type="submit" class="btn-primary w-full">
             Continue to payment
         </button>
     </div>

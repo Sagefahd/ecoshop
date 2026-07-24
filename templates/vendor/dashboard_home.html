@@ -2,43 +2,119 @@
 {% block title %}Dashboard — EcoShop Ghana{% endblock %}
 
 {% block dashboard_content %}
-<h1 class="font-display text-2xl font-bold mb-6">Overview</h1>
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="font-display text-2xl font-bold">Overview</h1>
+        <p class="text-sm text-forest/50">Here's how the shop is doing.</p>
+    </div>
+    <a href="{% url 'vendor:product_create' %}" class="btn-primary text-sm">+ Add product</a>
+</div>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <div class="bg-white rounded-2xl border border-forest/10 p-5">
-        <p class="text-xs text-forest/50 mb-1">Active products</p>
-        <p class="font-display text-2xl font-bold">{{ stats.active_products }}</p>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card">
+        <div>
+            <p class="text-xs text-forest/50 mb-1">Active products</p>
+            <p class="font-display text-2xl font-bold">{{ stats.active_products }}</p>
+            <p class="text-xs text-forest/40 mt-1">{{ stats.total_products }} total</p>
+        </div>
+        <div class="icon-badge bg-forest/10 text-forest">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </div>
     </div>
-    <div class="bg-white rounded-2xl border border-forest/10 p-5">
-        <p class="text-xs text-forest/50 mb-1">Out of stock</p>
-        <p class="font-display text-2xl font-bold {% if stats.out_of_stock > 0 %}text-clayred{% endif %}">{{ stats.out_of_stock }}</p>
+    <div class="stat-card">
+        <div>
+            <p class="text-xs text-forest/50 mb-1">Out of stock</p>
+            <p class="font-display text-2xl font-bold {% if stats.out_of_stock > 0 %}text-clayred{% endif %}">{{ stats.out_of_stock }}</p>
+            <p class="text-xs text-forest/40 mt-1">needs restock</p>
+        </div>
+        <div class="icon-badge bg-clayred/10 text-clayred">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+        </div>
     </div>
-    <div class="bg-white rounded-2xl border border-forest/10 p-5">
-        <p class="text-xs text-forest/50 mb-1">Pending orders</p>
-        <p class="font-display text-2xl font-bold text-gold">{{ stats.pending_orders }}</p>
+    <div class="stat-card">
+        <div>
+            <p class="text-xs text-forest/50 mb-1">Pending orders</p>
+            <p class="font-display text-2xl font-bold text-gold">{{ stats.pending_orders }}</p>
+            <p class="text-xs text-forest/40 mt-1">{{ stats.orders_last_30_days }} in 30 days</p>
+        </div>
+        <div class="icon-badge bg-gold/10 text-gold">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+        </div>
     </div>
-    <div class="bg-white rounded-2xl border border-forest/10 p-5">
-        <p class="text-xs text-forest/50 mb-1">Revenue (30 days)</p>
-        <p class="font-display text-2xl font-bold">GHS {{ stats.revenue_last_30_days }}</p>
+    <div class="stat-card">
+        <div>
+            <p class="text-xs text-forest/50 mb-1">Revenue (30 days)</p>
+            <p class="font-display text-2xl font-bold">GHS {{ stats.revenue_last_30_days }}</p>
+            <p class="text-xs text-forest/40 mt-1">{{ stats.customers_total }} customer{{ stats.customers_total|pluralize }}</p>
+        </div>
+        <div class="icon-badge bg-forest-light/10 text-forest-light">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2m0-2c-1.11 0-2.08-.402-2.599-1" /></svg>
+        </div>
     </div>
 </div>
 
-<div class="bg-white rounded-2xl border border-forest/10">
-    <div class="flex items-center justify-between p-5 border-b border-forest/10">
-        <h2 class="font-semibold">Recent orders</h2>
-        <a href="{% url 'vendor:order_checklist' %}" class="text-xs text-gold hover:underline">View all &rarr;</a>
+<div class="grid lg:grid-cols-3 gap-6 mb-6">
+    <div class="card p-5 lg:col-span-1">
+        <h2 class="font-semibold mb-4 text-sm">Orders, last 7 days</h2>
+        <div class="flex items-end gap-2 h-32">
+            {% for point in trend %}
+            <div class="flex-1 flex flex-col items-center justify-end gap-2 h-full">
+                <div class="w-full bg-gold/20 rounded-t-md relative flex-1 flex items-end">
+                    <div class="w-full bg-gold rounded-t-md transition-all" style="height: {{ point.pct }}%; min-height: {% if point.count > 0 %}4px{% else %}0{% endif %};"></div>
+                </div>
+                <span class="text-[11px] text-forest/40">{{ point.label }}</span>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    <div class="divide-y divide-forest/10">
-        {% for order in recent_orders %}
-        <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex items-center justify-between p-4 hover:bg-forest/5 transition text-sm">
-            <span class="font-medium">{{ order.order_id }}</span>
-            <span class="text-forest/50">{{ order.created_at|date:"M d" }}</span>
-            <span class="font-semibold">GHS {{ order.total }}</span>
-            <span class="text-xs font-medium px-2 py-1 rounded-full bg-gold/10 text-gold">{{ order.get_status_display }}</span>
-        </a>
-        {% empty %}
-        <p class="p-5 text-sm text-forest/50">No orders yet.</p>
-        {% endfor %}
+
+    <div class="card lg:col-span-2">
+        <div class="flex items-center justify-between p-5 border-b border-forest/10">
+            <h2 class="font-semibold">Recent orders</h2>
+            <a href="{% url 'vendor:order_checklist' %}" class="text-xs text-gold hover:underline">View all &rarr;</a>
+        </div>
+        <div class="divide-y divide-forest/10">
+            {% for order in recent_orders %}
+            <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex items-center justify-between p-4 hover:bg-forest/5 transition text-sm">
+                <span class="font-medium">{{ order.order_id }}</span>
+                <span class="text-forest/50 hidden sm:inline">{{ order.created_at|date:"M d" }}</span>
+                <span class="font-semibold">GHS {{ order.total }}</span>
+                <span class="badge-warning">{{ order.get_status_display }}</span>
+            </a>
+            {% empty %}
+            <p class="p-5 text-sm text-forest/50">No orders yet.</p>
+            {% endfor %}
+        </div>
     </div>
+</div>
+
+<div class="grid sm:grid-cols-3 gap-4">
+    <a href="{% url 'vendor:product_create' %}" class="card p-5 hover:border-gold transition flex items-center gap-3">
+        <div class="icon-badge bg-forest/10 text-forest">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+        </div>
+        <div>
+            <p class="text-sm font-semibold">Add a product</p>
+            <p class="text-xs text-forest/50">List something new</p>
+        </div>
+    </a>
+    <a href="{% url 'vendor:promo_create' %}" class="card p-5 hover:border-gold transition flex items-center gap-3">
+        <div class="icon-badge bg-gold/10 text-gold">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5.586a1 1 0 01.707.293l7.414 7.414a1 1 0 010 1.414l-8.586 8.586a1 1 0 01-1.414 0L3.293 13.293A1 1 0 013 12.586V7a4 4 0 014-4z" /></svg>
+        </div>
+        <div>
+            <p class="text-sm font-semibold">Create a promo</p>
+            <p class="text-xs text-forest/50">Run a discount</p>
+        </div>
+    </a>
+    <a href="{% url 'vendor:order_checklist' %}?status=pending" class="card p-5 hover:border-gold transition flex items-center gap-3">
+        <div class="icon-badge bg-clayred/10 text-clayred">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+        <div>
+            <p class="text-sm font-semibold">Process orders</p>
+            <p class="text-xs text-forest/50">{{ stats.pending_orders }} waiting</p>
+        </div>
+    </a>
 </div>
 {% endblock %}

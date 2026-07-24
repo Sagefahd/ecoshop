@@ -12,37 +12,41 @@
 {% endif %}
 
 {% if cart and cart.items.exists %}
-<div class="bg-white rounded-2xl border border-forest/10 divide-y divide-forest/10">
+<div class="card divide-y divide-forest/10">
     {% for item in cart.items.all %}
-    <div class="flex items-center gap-4 p-4">
-        <div class="w-16 h-16 bg-forest/5 rounded-lg overflow-hidden shrink-0">
-            {% if item.product.thumbnail %}
-                <img src="{{ item.product.thumbnail.url }}" class="w-full h-full object-cover">
-            {% endif %}
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-4">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="w-16 h-16 bg-forest/5 rounded-lg overflow-hidden shrink-0">
+                {% if item.product.thumbnail %}
+                    <img src="{{ item.product.thumbnail.url }}" class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+            <div class="min-w-0">
+                <p class="font-medium text-sm truncate">{{ item.product.name }}</p>
+                <p class="text-xs text-forest/50">GHS {{ item.product.display_price }} each</p>
+            </div>
         </div>
-        <div class="flex-1">
-            <p class="font-medium text-sm">{{ item.product.name }}</p>
-            <p class="text-xs text-forest/50">GHS {{ item.product.display_price }} each</p>
+
+        <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+            <form action="{% url 'orders:cart_update' item.id %}" method="post" class="flex items-center gap-2">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" class="input w-16 py-1.5 text-center text-sm">
+                <button class="text-xs text-gold font-semibold hover:underline whitespace-nowrap">Update</button>
+            </form>
+            <p class="font-semibold text-sm w-20 text-right shrink-0">GHS {{ item.subtotal }}</p>
+            <a href="{% url 'orders:cart_remove' item.id %}" class="text-clayred text-xs font-medium hover:underline whitespace-nowrap">Remove</a>
         </div>
-        <form action="{% url 'orders:cart_update' item.id %}" method="post" class="flex items-center gap-2">
-            {% csrf_token %}
-            <input type="number" name="quantity" value="{{ item.quantity }}" min="0"
-                   class="w-16 bg-white border border-forest/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold transition">
-            <button class="text-xs text-gold font-medium hover:underline">Update</button>
-        </form>
-        <p class="font-semibold w-24 text-right">GHS {{ item.subtotal }}</p>
-        <a href="{% url 'orders:cart_remove' item.id %}" class="text-clayred text-xs hover:underline">Remove</a>
     </div>
     {% endfor %}
 </div>
 
 <div class="flex justify-end mt-6">
-    <div class="w-full md:w-80 bg-white rounded-2xl border border-forest/10 p-6">
+    <div class="w-full md:w-80 card p-6">
         <div class="flex justify-between mb-4">
             <span class="text-forest/60">Total</span>
             <span class="font-display font-bold text-xl">GHS {{ cart.total }}</span>
         </div>
-        <a href="{% url 'orders:checkout' %}" class="block text-center bg-forest hover:bg-forest-light text-sand font-semibold py-3 rounded-full transition">
+        <a href="{% url 'orders:checkout' %}" class="btn-primary w-full">
             Proceed to checkout
         </a>
     </div>

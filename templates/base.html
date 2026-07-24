@@ -17,15 +17,17 @@
 
     <header class="bg-forest text-sand sticky top-0 z-40 shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-            <a href="{% url 'core:home' %}" class="font-display text-2xl font-bold tracking-tight text-gold">Nak Florex<span class="text-sand">Designs</span></a>
+            <a href="{% url 'core:home' %}" class="font-display text-xl sm:text-2xl font-bold tracking-tight text-gold shrink-0">
+                Eco<span class="text-sand">Shop</span>
+            </a>
 
             <form action="{% url 'catalog:product_list' %}" method="get" class="flex-1 hidden md:flex">
                 <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
-                       class="w-full rounded-l-full px-4 py-2 bg-white border border-r-0 border-white text-forest-dark placeholder-forest/40 focus:outline-none focus:ring-2 focus:ring-gold">
+                       class="w-full rounded-l-full px-4 py-2.5 bg-white border border-r-0 border-white text-forest-dark placeholder-forest/40 focus:outline-none focus:ring-2 focus:ring-gold">
                 <button class="bg-gold hover:bg-gold-light text-forest-dark font-semibold px-5 rounded-r-full transition">Search</button>
             </form>
 
-            <nav class="flex items-center gap-4 ml-auto text-sm font-medium">
+            <nav class="hidden md:flex items-center gap-5 ml-auto text-sm font-medium">
                 <a href="{% url 'catalog:product_list' %}" class="hover:text-gold transition">Shop</a>
                 {% if user.is_authenticated %}
                     <a href="{% url 'orders:order_list' %}" class="hover:text-gold transition">My Orders</a>
@@ -39,39 +41,78 @@
                 {% else %}
                     <a href="{% url 'accounts:request_otp' %}" class="hover:text-gold transition">Login</a>
                 {% endif %}
-                <a href="{% url 'orders:cart_detail' %}" class="relative hover:text-gold transition" aria-label="Cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l3.6-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    {% if cart_count > 0 %}
-                    <span class="absolute -top-2 -right-2 bg-gold text-forest-dark text-[11px] font-bold leading-none rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                        {{ cart_count }}
-                    </span>
+            </nav>
+
+            <a href="{% url 'orders:cart_detail' %}" class="relative hover:text-gold transition ml-auto md:ml-0" aria-label="Cart">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l3.6-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {% if cart_count > 0 %}
+                <span class="absolute -top-2 -right-2 bg-gold text-forest-dark text-[11px] font-bold leading-none rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    {{ cart_count }}
+                </span>
+                {% endif %}
+            </a>
+
+            <button id="mobile-menu-btn" type="button" aria-label="Menu" aria-expanded="false"
+                    class="md:hidden p-1.5 -mr-1.5 rounded-lg hover:bg-white/10 transition">
+                <svg id="icon-open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg id="icon-close" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile menu panel -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 px-4 py-4 space-y-4">
+            <form action="{% url 'catalog:product_list' %}" method="get" class="flex">
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
+                       class="w-full rounded-l-full px-4 py-2.5 bg-white border border-r-0 border-white text-forest-dark placeholder-forest/40 focus:outline-none">
+                <button class="bg-gold text-forest-dark font-semibold px-5 rounded-r-full">Go</button>
+            </form>
+            <nav class="flex flex-col gap-1 text-sm font-medium">
+                <a href="{% url 'catalog:product_list' %}" class="py-2.5 hover:text-gold transition">Shop</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'orders:order_list' %}" class="py-2.5 hover:text-gold transition">My Orders</a>
+                    <a href="{% url 'accounts:address_list' %}" class="py-2.5 hover:text-gold transition">My Addresses</a>
+                    {% if user.is_vendor %}
+                        <a href="{% url 'vendor:dashboard_home' %}" class="py-2.5 hover:text-gold transition">Vendor Dashboard</a>
                     {% endif %}
-                </a>
+                    <form action="/accounts/social/logout/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="py-2.5 text-left w-full hover:text-gold transition">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:request_otp' %}" class="py-2.5 hover:text-gold transition">Login</a>
+                {% endif %}
             </nav>
         </div>
-        <form action="{% url 'catalog:product_list' %}" method="get" class="flex md:hidden px-4 pb-3">
-            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
-                   class="w-full rounded-l-full px-4 py-2 bg-white border border-r-0 border-white text-forest-dark placeholder-forest/40 focus:outline-none">
-            <button class="bg-gold text-forest-dark font-semibold px-5 rounded-r-full">Go</button>
-        </form>
     </header>
 
-    {% if messages %}
-        <div class="max-w-7xl mx-auto w-full px-4 pt-4 space-y-2">
-            {% for message in messages %}
-                <div class="rounded-lg px-4 py-3 text-sm font-medium
-                    {% if message.tags == 'error' %} bg-clayred/10 text-clayred border border-clayred/30
-                    {% elif message.tags == 'success' %} bg-forest-light/10 text-forest-light border border-forest-light/30
-                    {% else %} bg-gold/10 text-gold border border-gold/40 {% endif %}">
-                    {{ message }}
+    <!-- Toast notifications -->
+    <div id="toast-container" class="fixed top-4 inset-x-0 z-50 flex flex-col items-center gap-2 px-4 pointer-events-none">
+        {% for message in messages %}
+            <div class="toast {% if message.tags == 'error' %}toast-error{% elif message.tags == 'success' %}toast-success{% else %}toast-warning{% endif %}">
+                <div class="shrink-0 mt-0.5">
+                    {% if message.tags == 'error' %}
+                        <svg class="h-5 w-5 text-clayred" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                    {% elif message.tags == 'success' %}
+                        <svg class="h-5 w-5 text-forest-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l2.25 2.25L15 9.75m6 2.25a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {% else %}
+                        <svg class="h-5 w-5 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+                <p class="text-sm font-medium flex-1 text-forest-dark">{{ message }}</p>
+                <button type="button" class="toast-close text-forest/40 hover:text-forest transition shrink-0" aria-label="Dismiss">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
 
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:py-8">
         {% block content %}{% endblock %}
     </main>
 
@@ -84,12 +125,49 @@
 
     {% if WHATSAPP_SUPPORT_LINK %}
     <a href="{{ WHATSAPP_SUPPORT_LINK }}" target="_blank" rel="noopener"
-       class="fixed bottom-5 right-5 z-50 bg-[#25D366] hover:bg-[#1ebe5b] text-white rounded-full p-4 shadow-lg transition"
+       class="fixed bottom-5 right-5 z-50 bg-[#25D366] hover:bg-[#1ebe5b] text-white rounded-full p-4 shadow-lg transition hover:scale-105 active:scale-95"
        aria-label="Chat with us on WhatsApp">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-7 w-7" fill="currentColor">
             <path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.696 4.607 1.897 6.476L4 29l7.72-1.867A11.94 11.94 0 0016 27c6.627 0 12-5.373 12-12S22.628 3 16.001 3zm0 21.6c-1.98 0-3.83-.55-5.41-1.5l-.388-.23-4.58 1.107 1.127-4.47-.253-.406A9.56 9.56 0 016.4 15c0-5.303 4.298-9.6 9.601-9.6 5.303 0 9.6 4.297 9.6 9.6 0 5.302-4.297 9.6-9.6 9.6zm5.29-7.19c-.29-.145-1.71-.844-1.975-.94-.264-.097-.457-.145-.65.145-.192.29-.746.94-.914 1.133-.168.193-.336.217-.626.072-.29-.145-1.223-.45-2.33-1.435-.86-.767-1.442-1.715-1.61-2.005-.168-.29-.018-.447.127-.591.13-.13.29-.338.434-.507.145-.168.193-.29.29-.483.096-.193.048-.362-.024-.507-.072-.145-.65-1.566-.89-2.145-.235-.564-.473-.487-.65-.496-.168-.008-.36-.01-.554-.01-.193 0-.507.072-.773.362-.265.29-1.012.99-1.012 2.412 0 1.423 1.036 2.797 1.18 2.99.145.193 2.037 3.11 4.936 4.362.69.298 1.228.476 1.648.61.692.22 1.322.189 1.82.115.555-.083 1.71-.699 1.951-1.373.24-.675.24-1.253.168-1.373-.072-.12-.264-.193-.554-.338z"/>
         </svg>
     </a>
     {% endif %}
+
+    <script>
+        // Mobile menu toggle
+        (function () {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            const iconOpen = document.getElementById('icon-open');
+            const iconClose = document.getElementById('icon-close');
+            if (btn && menu) {
+                btn.addEventListener('click', function () {
+                    const isOpen = !menu.classList.contains('hidden');
+                    menu.classList.toggle('hidden');
+                    iconOpen.classList.toggle('hidden');
+                    iconClose.classList.toggle('hidden');
+                    btn.setAttribute('aria-expanded', String(!isOpen));
+                });
+            }
+        })();
+
+        // Toast auto-dismiss + manual close
+        (function () {
+            function dismiss(toast) {
+                toast.classList.add('toast-out');
+                setTimeout(() => toast.remove(), 200);
+            }
+            document.querySelectorAll('.toast').forEach(function (toast) {
+                const timer = setTimeout(() => dismiss(toast), 5000);
+                const closeBtn = toast.querySelector('.toast-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () {
+                        clearTimeout(timer);
+                        dismiss(toast);
+                    });
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
