@@ -40,13 +40,13 @@
 
 <div class="card divide-y divide-forest/10">
     {% for payment in payments %}
-    <a href="{% url 'vendor:order_detail' payment.order.order_id %}" class="flex items-center justify-between p-4 text-sm hover:bg-forest/5 transition">
-        <div>
-            <p class="font-medium">{{ payment.order.order_id }}</p>
-            <p class="text-xs text-forest/50">{{ payment.get_method_display }} &middot; {{ payment.created_at|date:"M d, Y H:i" }}</p>
+    <a href="{% url 'vendor:order_detail' payment.order.order_id %}" class="flex items-center gap-3 p-4 text-sm hover:bg-forest/5 transition">
+        <div class="flex-1 min-w-0">
+            <p class="font-medium truncate">{{ payment.order.order_id }}</p>
+            <p class="text-xs text-forest/50 truncate">{{ payment.get_method_display }} &middot; {{ payment.created_at|date:"M d, Y H:i" }}</p>
         </div>
-        <span class="font-semibold">GHS {{ payment.amount }}</span>
-        <span class="{% if payment.status == 'successful' %}badge-success{% elif payment.status == 'failed' %}badge-danger{% else %}badge-warning{% endif %}">
+        <span class="font-semibold w-24 text-right shrink-0">GHS {{ payment.amount }}</span>
+        <span class="{% if payment.status == 'successful' %}badge-success{% elif payment.status == 'failed' %}badge-danger{% else %}badge-warning{% endif %} w-28 justify-center shrink-0">
             {{ payment.get_status_display }}
         </span>
     </a>

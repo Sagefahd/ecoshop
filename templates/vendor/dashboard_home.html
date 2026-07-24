@@ -75,11 +75,11 @@
         </div>
         <div class="divide-y divide-forest/10">
             {% for order in recent_orders %}
-            <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex items-center justify-between p-4 hover:bg-forest/5 transition text-sm">
-                <span class="font-medium">{{ order.order_id }}</span>
-                <span class="text-forest/50 hidden sm:inline">{{ order.created_at|date:"M d" }}</span>
-                <span class="font-semibold">GHS {{ order.total }}</span>
-                <span class="badge-warning">{{ order.get_status_display }}</span>
+            <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex items-center gap-3 p-4 hover:bg-forest/5 transition text-sm">
+                <span class="font-medium flex-1 min-w-0 truncate">{{ order.order_id }}</span>
+                <span class="text-forest/50 hidden sm:block w-16 text-right shrink-0">{{ order.created_at|date:"M d" }}</span>
+                <span class="font-semibold w-20 text-right shrink-0">GHS {{ order.total }}</span>
+                <span class="badge-warning w-32 justify-center shrink-0">{{ order.get_status_display }}</span>
             </a>
             {% empty %}
             <p class="p-5 text-sm text-forest/50">No orders yet.</p>

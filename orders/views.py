@@ -155,4 +155,18 @@ def order_list(request):
 @login_required
 def order_status(request, order_id):
     order = get_object_or_404(Order, order_id=order_id, user=request.user)
-    return render(request, "orders/order_status.html", {"order": order})
+
+    tracker_steps = []
+    if order.status != "cancelled":
+        ordered_statuses = [s for s, _ in Order.STATUS_CHOICES if s != "cancelled"]
+        current_index = ordered_statuses.index(order.status)
+        for i, (step, label) in enumerate(Order.STATUS_CHOICES):
+            if step == "cancelled":
+                continue
+            tracker_steps.append({
+                "label": label,
+                "completed": i < current_index,
+                "current": i == current_index,
+            })
+
+    return render(request, "orders/order_status.html", {"order": order, "tracker_steps": tracker_steps})

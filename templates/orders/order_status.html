@@ -16,13 +16,25 @@
             <p class="text-clayred text-sm font-medium">This order was cancelled.</p>
         {% else %}
         <div class="flex flex-col md:flex-row md:justify-between gap-4 md:gap-0">
-            {% for step, label in order.STATUS_CHOICES %}
-                {% if step != "cancelled" %}
-                <div class="flex md:flex-col items-center md:text-center gap-3 md:gap-2 md:flex-1">
-                    <div class="h-3 w-3 rounded-full shrink-0 {% if order.status == step %}bg-gold{% else %}bg-forest/20{% endif %}"></div>
-                    <p class="text-sm md:text-xs text-forest/70 md:text-forest/60">{{ label }}</p>
+            {% for step in tracker_steps %}
+            <div class="flex md:flex-col items-center md:text-center gap-3 md:gap-2 md:flex-1 relative">
+                {% if step.completed %}
+                <div class="h-7 w-7 rounded-full bg-forest-light flex items-center justify-center shrink-0">
+                    <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
                 </div>
+                {% elif step.current %}
+                <div class="h-7 w-7 rounded-full bg-gold ring-4 ring-gold/20 flex items-center justify-center shrink-0">
+                    <div class="h-2 w-2 rounded-full bg-white"></div>
+                </div>
+                {% else %}
+                <div class="h-7 w-7 rounded-full border-2 border-forest/15 shrink-0"></div>
                 {% endif %}
+                <p class="text-sm md:text-xs {% if step.current %}text-forest font-semibold{% elif step.completed %}text-forest/70{% else %}text-forest/40{% endif %} md:text-forest/60">
+                    {{ step.label }}
+                </p>
+            </div>
             {% endfor %}
         </div>
         {% endif %}

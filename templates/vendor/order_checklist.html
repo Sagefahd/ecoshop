@@ -18,17 +18,17 @@
 
 <div class="card divide-y divide-forest/10">
     {% for order in orders %}
-    <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex flex-wrap items-center gap-3 p-4 hover:bg-forest/5 transition text-sm">
-        <div class="icon-badge bg-forest/5 text-forest/60 h-9 w-9">
+    <a href="{% url 'vendor:order_detail' order.order_id %}" class="flex items-center gap-3 p-4 hover:bg-forest/5 transition text-sm">
+        <div class="icon-badge bg-forest/5 text-forest/60 h-9 w-9 shrink-0">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /></svg>
         </div>
-        <div class="flex-1 min-w-[140px]">
-            <p class="font-medium">{{ order.order_id }}</p>
-            <p class="text-xs text-forest/50">{{ order.user.phone_number }} &middot; {{ order.created_at|date:"M d, Y" }}</p>
+        <div class="flex-1 min-w-0">
+            <p class="font-medium truncate">{{ order.order_id }}</p>
+            <p class="text-xs text-forest/50 truncate">{{ order.user.phone_number }} &middot; {{ order.created_at|date:"M d, Y" }}</p>
         </div>
-        <span class="text-forest/50">{{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</span>
-        <span class="font-semibold">GHS {{ order.total }}</span>
-        <span class="{% if order.status == 'delivered' %}badge-success{% elif order.status == 'cancelled' %}badge-danger{% else %}badge-warning{% endif %}">
+        <span class="text-forest/50 hidden sm:block w-20 text-right shrink-0">{{ order.total_quantity }} item{{ order.total_quantity|pluralize }}</span>
+        <span class="font-semibold w-24 text-right shrink-0">GHS {{ order.total }}</span>
+        <span class="{% if order.status == 'delivered' %}badge-success{% elif order.status == 'cancelled' %}badge-danger{% else %}badge-warning{% endif %} w-32 justify-center shrink-0">
             {{ order.get_status_display }}
         </span>
     </a>
