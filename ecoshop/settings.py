@@ -157,4 +157,4 @@ NALO_PAYMENT_PASSWORD = config("NALO_PAYMENT_PASSWORD", default="")
 NALO_MERCHANT_ID = config("NALO_MERCHANT_ID", default="")
 
 # ---- Site-wide settings (WhatsApp support link etc.) ----
-WHATSAPP_SUPPORT_NUMBER = config("WHATSAPP_SUPPORT_NUMBER", default="233200000000")
+WHATSAPP_SUPPORT_NUMBER = config("WHATSAPP_SUPPORT_NUMBER", default="233555266716")
